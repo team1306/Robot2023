@@ -13,33 +13,23 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import com.revrobotics.REVPhysicsSim;
-
 import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-// import frc.robot.Constants;
-// import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.apriltag.AprilTagDetector.Config;
 
 /**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as
- * described in the TimedRobot documentation. If you change the name of this
- * class or the package after creating this
+ * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
+ * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
  * project, you must also update the build.gradle file in the project.
  */
 public class Robot extends TimedRobot {
 
     public static DriveTrain driveTrain;
-    public static RamseteCommand autocmd;
-    // private static Command testCommand = null;
-
     // private RobotContainer m_robotContainer;
 
     // messing around w/ apriltag detector & video stuff
@@ -48,13 +38,8 @@ public class Robot extends TimedRobot {
     private CvSource out, out2;
     private VisionThread m_VisionThread;
 
-    // public static Command driveCommand;
-
-    // public static Intake intake = null;
-
     /**
-     * This function is run when the robot is first started up and should be used
-     * for any initialization code.
+     * This function is run when the robot is first started up and should be used for any initialization code.
      */
     @Override
     public void robotInit() {
@@ -75,26 +60,35 @@ public class Robot extends TimedRobot {
         out = CameraServer.putVideo("out", 480, 270);
         out2 = CameraServer.putVideo("bw", 480, 270);
 
+        // seperate thread for running vision code
         m_VisionThread = new VisionThread(cam, mat -> {
             // create matrix for modifications, and copy input from camera
             Mat tempMat = Mat.zeros(mat.size(), mat.type());
             mat.copyTo(tempMat);
-            // convert to grayscale and filter brightness => 120 -> white and < 120 -> black
+            // convert to grayscale and split by brightness: => 120 -> white and < 120 -> black
             Imgproc.cvtColor(tempMat, tempMat, Imgproc.COLOR_BGR2GRAY);
             Imgproc.threshold(tempMat, tempMat, 120, 255, Imgproc.THRESH_BINARY);
             // detect tags
             var dets = detector.detect(tempMat);
             if (dets.length > 0) {
-                // only valid tags from 1 to 8
                 for (var det : dets) {
+                    // only valid tags from 1 to 8
                     if (det.getId() > 8 || det.getId() < 1)
                         continue;
-                    // draw center and corners on colored output matrix
-                    Imgproc.drawMarker(mat, new Point(det.getCenterX(), det.getCenterY()), new Scalar(0, 255, 0));
+                    // draw center marking
+                    Imgproc.drawMarker(
+                        mat,
+                        new Point(det.getCenterX(), det.getCenterY()),
+                        new Scalar(0, 255, 0)
+                    );
+                    // corners are stored as x1, y1, x2, y2, etc.
                     for (int i = 0; i < det.getCorners().length / 2; i++) {
+                        // draw corner markings
                         Imgproc.drawMarker(
-                                mat, new Point(det.getCornerX(i), det.getCornerY(i)),
-                                new Scalar(0, 0, 255));
+                            mat,
+                            new Point(det.getCornerX(i), det.getCornerY(i)),
+                            new Scalar(0, 0, 255)
+                        );
                     }
                 }
             }
@@ -105,19 +99,16 @@ public class Robot extends TimedRobot {
             // do nothing
         });
         // run thread
-        m_VisionThread.setDaemon(true);
         m_VisionThread.start();
 
     }
 
     /**
-     * This function is called every robot packet, no matter the mode. Use this for
-     * items like diagnostics that you want
+     * This function is called every robot packet, no matter the mode. Use this for items like diagnostics that you want
      * ran during disabled, autonomous, teleoperated and test.
      *
      * <p>
-     * This runs after the mode specific periodic functions, but before LiveWindow
-     * and SmartDashboard integrated
+     * This runs after the mode specific periodic functions, but before LiveWindow and SmartDashboard integrated
      * updating.
      */
     @Override
@@ -136,16 +127,13 @@ public class Robot extends TimedRobot {
      * This function is called once each time the robot enters Disabled mode.
      */
     @Override
-    public void disabledInit() {
-    }
+    public void disabledInit() {}
 
     @Override
-    public void disabledPeriodic() {
-    }
+    public void disabledPeriodic() {}
 
     /**
-     * This autonomous runs the autonomous command selected by your
-     * {@link RobotContainer} class.
+     * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
      */
     @Override
     public void autonomousInit() {
@@ -183,12 +171,10 @@ public class Robot extends TimedRobot {
      * This function is called periodically during test mode.
      */
     @Override
-    public void testPeriodic() {
-    }
+    public void testPeriodic() {}
 
     @Override
     public void simulationPeriodic() {
         CommandScheduler.getInstance().run();
-        REVPhysicsSim.getInstance().run();
     }
 }

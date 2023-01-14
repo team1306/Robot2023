@@ -42,14 +42,11 @@ public class Controller {
     }
 
     /**
-     * Constructs a UserAnalog that precisely mirrors the axis, with no
-     * tranformation.
+     * Constructs a UserAnalog that precisely mirrors the axis, with no tranformation.
      * 
-     * @param player - one of either PRIMARY or SECONDARY. This value is validated,
-     *               and an invalid parameter will return
+     * @param player - one of either PRIMARY or SECONDARY. This value is validated, and an invalid parameter will return
      *               a UserAnalog that always gets 0
-     * @param axis   - The axis on the Xbox controller to grab values from. This
-     *               parameter is not validated, so make
+     * @param axis   - The axis on the Xbox controller to grab values from. This parameter is not validated, so make
      *               sure you have a valid axis!
      * @return the UserAnalog instance
      */
@@ -74,14 +71,11 @@ public class Controller {
     }
 
     /**
-     * Constructs a UserDigital that precisely mirrors the button value, with no
-     * tranformation.
+     * Constructs a UserDigital that precisely mirrors the button value, with no tranformation.
      * 
-     * @param player - one of either PRIMARY or SECONDARY. This value is validated,
-     *               and an invalid parameter will return
+     * @param player - one of either PRIMARY or SECONDARY. This value is validated, and an invalid parameter will return
      *               a UserDigital that always gets false.
-     * @param button - The button on the Xbox controller to grab values from. This
-     *               parameter is not validated, so make
+     * @param button - The button on the Xbox controller to grab values from. This parameter is not validated, so make
      *               sure you have a valid button!
      * @return the UserDigital instance
      */
@@ -104,8 +98,7 @@ public class Controller {
      * @param player player id
      * @param button button id
      * @param cmd    command to bind to said button
-     * @return the bound button in case other operations need to be done and to
-     *         protect against trash collection
+     * @return the bound button in case other operations need to be done and to protect against trash collection
      */
     public static JoystickButton bindCommand(int player, int button, Command cmd) {
         JoystickButton b = getJoystickButton(player, button);
@@ -119,8 +112,7 @@ public class Controller {
      * @param player   player id
      * @param button   button id
      * @param callback callback to bind to specified button
-     * @return the bound button in case other operations need to be done and to
-     *         protect against trash collection
+     * @return the bound button in case other operations need to be done and to protect against trash collection
      */
     public static JoystickButton bindCallback(int player, int button, Runnable callback) {
         // bind to one time command i guess
@@ -128,8 +120,7 @@ public class Controller {
     }
 
     /**
-     * get joystick button from player and button ids, secondary if invalid player
-     * is given
+     * get joystick button from player and button ids, secondary if invalid player is given
      * 
      * @param player player id (secondary by default)
      * @param button button id

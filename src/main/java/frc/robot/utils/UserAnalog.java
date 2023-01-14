@@ -13,11 +13,7 @@ public interface UserAnalog {
      * @param falseVal - the output when teh digitalinput is false
      * @return the constructed Analog
      */
-    public static UserAnalog fromDigital(
-        UserDigital digital,
-        double trueVal,
-        double falseVal
-    ) {
+    public static UserAnalog fromDigital(UserDigital digital, double trueVal, double falseVal) {
         return () -> digital.get() ? trueVal : falseVal;
     }
 

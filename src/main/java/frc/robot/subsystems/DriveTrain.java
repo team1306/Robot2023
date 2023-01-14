@@ -21,8 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 /**
- * Used by DriveTrain command to move robot Calculates output for each side of
- * the drivetrain
+ * Used by DriveTrain command to move robot Calculates output for each side of the drivetrain
  */
 @SuppressWarnings("unused")
 public class DriveTrain extends SubsystemBase implements AutoCloseable {
@@ -117,16 +116,16 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     }
 
     /**
-     * limits acceleration for the robot, should prevent rocking does not prevent
-     * rapid decceleration
+     * limits acceleration for the robot, should prevent rocking does not prevent rapid decceleration
      * 
      * @param currentTargetPercentOutput target output for motor that user inputed
      * @param previousPercentOutput      previous outputed target for motor
      * @return a target motor value
      */
     public double limitAcceleration(
-            double currentTargetPercentOutput,
-            double previousPercentOutput) {
+        double currentTargetPercentOutput,
+        double previousPercentOutput
+    ) {
         // increment
         final double INCR = Constants.TIME_PER_LOOP / Constants.TIME_TO_FULL_SPEED;
         // change that the user wants
@@ -152,8 +151,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     }
 
     /**
-     * Test the lead motors and folowing motors test to see if initialization
-     * process for setting 'following' is correct
+     * Test the lead motors and folowing motors test to see if initialization process for setting 'following' is correct
      * 
      * @param left  left talonmFX output
      * @param right right talonmFX output
@@ -164,8 +162,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     }
 
     /**
-     * testing method for eaching individual talonmFX only works if constructor does
-     * not set follow
+     * testing method for eaching individual talonmFX only works if constructor does not set follow
      * 
      * @param leftFront   left front talonmFX output
      * @param rightFront  right front talonmFX output
@@ -173,10 +170,11 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
      * @param rightFollow right followe talonmFX output
      */
     public void testMotors(
-            double leftFront,
-            double rightFront,
-            double leftFollow,
-            double rightFollow) {
+        double leftFront,
+        double rightFront,
+        double leftFollow,
+        double rightFollow
+    ) {
         leftLeader.set(ControlMode.PercentOutput, leftFront);
         rightLeader.set(ControlMode.PercentOutput, rightFront);
 
@@ -238,12 +236,12 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         // rotations per second
         // meters per second
         double leftSpeed = leftLeader.getSelectedSensorVelocity()
-                * (10.0 / 2048 / 5.88) // dm -> m, et -> rot, gear ratio
-                * Constants.WHEEL_CIRCUMFERENCE;
+            * (10.0 / 2048 / 5.88) // dm -> m, et -> rot, gear ratio
+            * Constants.WHEEL_CIRCUMFERENCE;
         // SmartDashboard.putNumber("leftSpeed", leftSpeed);
         double rightSpeed = rightLeader.getSelectedSensorVelocity()
-                * (10.0 / 2048 / 5.88)
-                * Constants.WHEEL_CIRCUMFERENCE;
+            * (10.0 / 2048 / 5.88)
+            * Constants.WHEEL_CIRCUMFERENCE;
         // SmartDashboard.putNumber("rightSpeed", rightSpeed);
 
         return new DifferentialDriveWheelSpeeds(leftSpeed, rightSpeed);
@@ -267,12 +265,9 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     }
 
     /**
-     * two params : speed, rotation use those two params to generate target state of
-     * robot, which means we need to know
-     * the speed forward and rotational speed. Then compare those two speeds to the
-     * current speed of the robot, and find
-     * the difference between the current speed between the target speed Adjust the
-     * target speed based on the current
+     * two params : speed, rotation use those two params to generate target state of robot, which means we need to know
+     * the speed forward and rotational speed. Then compare those two speeds to the current speed of the robot, and find
+     * the difference between the current speed between the target speed Adjust the target speed based on the current
      * speed and the difference. Basically arcadeDrive.
      */
     public void adjustedArcadeDrive(double speed, double rotation) {

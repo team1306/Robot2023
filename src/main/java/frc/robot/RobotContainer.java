@@ -23,12 +23,9 @@ import frc.robot.utils.UserAnalog;
 import frc.robot.utils.UserDigital;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very
- * little robot logic should actually be handled in the {@link Robot} periodic
- * methods (other than the scheduler calls).
- * Instead, the structure of the robot (including subsystems, commands, and
- * button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
+ * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
+ * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
  */
 @SuppressWarnings("unused")
 public class RobotContainer {
@@ -64,20 +61,18 @@ public class RobotContainer {
 
         driveTrain = new DriveTrain();
         driveCommand = new DriveCommand(
-                driveTrain,
-                speedDriveTrain,
-                backwardsTurbo,
-                forwardTurbo,
-                joystickRotationDriveTrain);
+            driveTrain,
+            speedDriveTrain,
+            backwardsTurbo,
+            forwardTurbo,
+            joystickRotationDriveTrain
+        );
     }
 
     /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by instantiating a
-     * {@link GenericHID} or one of its subclasses
-     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}),
-     * and then passing it to a
-     * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     * Use this method to define your button->command mappings. Buttons can be created by instantiating a
+     * {@link GenericHID} or one of its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}),
+     * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
         speedDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LY);
@@ -87,8 +82,7 @@ public class RobotContainer {
     }
 
     /**
-     * called when autonomous is started should create all commands that are used in
-     * auto
+     * called when autonomous is started should create all commands that are used in auto
      */
     public void startAuto() {
         autoCommand = getAutonomousCommand();
@@ -100,8 +94,7 @@ public class RobotContainer {
     }
 
     /**
-     * start off teleop period by cancelling autonomous command and switching the
-     * drivetrain command to the user driving
+     * start off teleop period by cancelling autonomous command and switching the drivetrain command to the user driving
      * command
      * 
      */
