@@ -8,9 +8,11 @@
 
 package frc.robot;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.apriltag.AprilTagDetector;
@@ -61,7 +63,7 @@ public class Robot extends TimedRobot {
         out2 = CameraServer.putVideo("bw", 480, 270);
 
         // seperate thread for running vision code
-        m_VisionThread = new VisionThread(cam, mat -> {
+        var aprilThread = new VisionThread(cam, mat -> {
             // create matrix for modifications, and copy input from camera
             Mat tempMat = Mat.zeros(mat.size(), mat.type());
             mat.copyTo(tempMat);
@@ -70,26 +72,24 @@ public class Robot extends TimedRobot {
             Imgproc.threshold(tempMat, tempMat, 120, 255, Imgproc.THRESH_BINARY);
             // detect tags
             var dets = detector.detect(tempMat);
-            if (dets.length > 0) {
-                for (var det : dets) {
-                    // only valid tags from 1 to 8
-                    if (det.getId() > 8 || det.getId() < 1)
-                        continue;
-                    // draw center marking
+            for (var det : dets) {
+                // only valid tags from 1 to 8
+                if (det.getId() > 8 || det.getId() < 1)
+                    continue;
+                // draw center marking
+                Imgproc.drawMarker(
+                    mat,
+                    new Point(det.getCenterX(), det.getCenterY()),
+                    new Scalar(0, 255, 0)
+                );
+                // corners are stored as x1, y1, x2, y2, etc.
+                for (int i = 0; i < det.getCorners().length / 2; i++) {
+                    // draw corner markings
                     Imgproc.drawMarker(
                         mat,
-                        new Point(det.getCenterX(), det.getCenterY()),
-                        new Scalar(0, 255, 0)
+                        new Point(det.getCornerX(i), det.getCornerY(i)),
+                        new Scalar(0, 0, 255)
                     );
-                    // corners are stored as x1, y1, x2, y2, etc.
-                    for (int i = 0; i < det.getCorners().length / 2; i++) {
-                        // draw corner markings
-                        Imgproc.drawMarker(
-                            mat,
-                            new Point(det.getCornerX(i), det.getCornerY(i)),
-                            new Scalar(0, 0, 255)
-                        );
-                    }
                 }
             }
             // output frames to camera server in shuffleboard
@@ -99,8 +99,23 @@ public class Robot extends TimedRobot {
             // do nothing
         });
         // run thread
-        m_VisionThread.start();
+        // aprilThread.start();
 
+        var thread = new VisionThread(cam, mat -> {
+            // look for yellow pixels in picture
+            var mat2 = mat.clone();
+            Core.inRange(mat, new Scalar(0, 75, 75), new Scalar(75, 255, 255), mat);
+            Imgproc.GaussianBlur(mat, mat, new Size(41, 41), 0);
+            Imgproc.threshold(mat, mat, 120, 255, Imgproc.THRESH_BINARY);
+            var moments = Imgproc.moments(mat);
+            var x = moments.get_m10() / moments.get_m00();
+            var y = moments.get_m01() / moments.get_m00();
+            Imgproc.circle(mat2, new Point(x, y), 5, new Scalar(0, 255, 0), -1);
+            // Core.inRange(mat, new Scalar(138, 105, 0), new Scalar(255, 250, 101), mat);
+            out.putFrame(mat);
+            out2.putFrame(mat2);
+        }, a -> {});
+        thread.start();
     }
 
     /**

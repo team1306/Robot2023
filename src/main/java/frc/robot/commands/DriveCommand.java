@@ -11,7 +11,6 @@ import frc.robot.subsystems.DriveTrain;
 public class DriveCommand extends CommandBase {
 
     private UserAnalog speed;
-    // private UserAnalog rightSpeed;
     private DriveTrain driveTrain;
     private UserAnalog backwardsTurbo;
     private UserAnalog forwardTurbo;
