@@ -137,46 +137,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     }
 
     /**
-     * Test the lead motors and folowing motors test to see if initialization process for setting 'following' is correct
-     * 
-     * @param left  left talonmFX output
-     * @param right right talonmFX output
-     */
-    public void testDrive(double left, double right) {
-        leftLeader.set(ControlMode.PercentOutput, left);
-        rightLeader.set(ControlMode.PercentOutput, right);
-    }
-
-    /**
-     * testing method for eaching individual talonmFX only works if constructor does not set follow
-     * 
-     * @param leftFront   left front talonmFX output
-     * @param rightFront  right front talonmFX output
-     * @param leftFollow  left follow talonmFX output
-     * @param rightFollow right followe talonmFX output
-     */
-    public void testMotors(
-        double leftFront,
-        double rightFront,
-        double leftFollow,
-        double rightFollow
-    ) {
-        leftLeader.set(ControlMode.PercentOutput, leftFront);
-        rightLeader.set(ControlMode.PercentOutput, rightFront);
-
-        // experimental
-        leftFollower.follow(leftFollower);
-        rightFollower.follow(rightFollower);
-
-        leftFollower.set(ControlMode.PercentOutput, leftFollow);
-        rightFollower.set(ControlMode.PercentOutput, rightFollow);
-
-        // experimental
-        leftFollower.follow(leftLeader);
-        rightFollower.follow(rightLeader);
-    }
-
-    /**
      * take encoder ticks displacement of left wheels and convert into meters
      * 
      * @return displacement of left wheels in meters
@@ -198,19 +158,12 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         return distance;
     }
 
-    int disp, vel;
-
     @Override
     public void periodic() {
-        // SmartDashboard.putNumber("Acceleration in x", accelerometer.getX());
 
         // sketchy distance
-        vel += accelerometer.getX();
-        disp += vel;
 
         m_odometry.update(new Rotation2d(), getLeftDistance(), getRightDistance());
-
-        // SmartDashboard.putNumber("Movement in x", m_odometry.getPoseMeters().getX());
     }
 
     public Pose2d getPose() {
@@ -241,69 +194,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     public void resetEncoders() {
         leftLeader.setSelectedSensorPosition(0);
         rightLeader.setSelectedSensorPosition(0);
-    }
-
-    public void tankDriveVolts(double lVolts, double rVolts) {
-        leftLeader.set(ControlMode.PercentOutput, lVolts / 12.0 * (46.0 / 48.0));
-        rightLeader.set(ControlMode.PercentOutput, rVolts / 12.0);
-        // SmartDashboard.putNumber("lVolts", lVolts);
-        // SmartDashboard.putNumber("rVolts", rVolts);
-    }
-
-    /**
-     * two params : speed, rotation use those two params to generate target state of robot, which means we need to know
-     * the speed forward and rotational speed. Then compare those two speeds to the current speed of the robot, and find
-     * the difference between the current speed between the target speed Adjust the target speed based on the current
-     * speed and the difference. Basically arcadeDrive.
-     */
-    public void adjustedArcadeDrive(double speed, double rotation) {
-        double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
-        double leftMotorOutput;
-        double rightMotorOutput;
-        if (speed >= 0) {
-            if (rotation >= 0) {
-                leftMotorOutput = speed;
-                rightMotorOutput = speed - rotation;
-            } else {
-                leftMotorOutput = speed + rotation;
-                rightMotorOutput = maxInput;
-            }
-        } else {
-            if (rotation >= 0) {
-                leftMotorOutput = speed + rotation;
-                rightMotorOutput = maxInput;
-            } else {
-                leftMotorOutput = maxInput;
-                rightMotorOutput = speed - rotation;
-            }
-        }
-        DifferentialDriveWheelSpeeds currentSpeed = getWheelSpeeds();
-
-        // Somehow the flipped output for the right motor is assined to the left motor.
-        // Somehow it woirks in the original arcadeDrive.
-        double desiredLeftOutput = rightMotorOutput;
-        double desiredRightOutput = -leftMotorOutput;
-        // System.out.println("current: " + lspeed + " " + rspeed);
-        // System.out.println("desired: " + desiredLeftOutput + " " +
-        // desiredRightOutput);
-        // P(ID?) Constants
-        final double P = .5;
-        // normalize speeds to [-1,1]
-        double curLSpeed = currentSpeed.leftMetersPerSecond / Constants.MAX_SPEED_MPS;
-        double curRSpeed = currentSpeed.rightMetersPerSecond / Constants.MAX_SPEED_MPS;
-        // get error
-        double leftErr = desiredLeftOutput - curLSpeed;// curLSpeed - desiredLeftOutput;
-        double rightErr = desiredRightOutput - curRSpeed;// curRSpeed - desiredRightOutput;
-        // got proportional offset
-        double leftDiff = leftErr * P;
-        double rightDiff = rightErr * P;
-
-        // get final speeds;
-        double leftSpeed = curLSpeed + leftDiff;
-        double rightSpeed = curRSpeed + rightDiff;
-        System.out.printf("left: %f , right : %f\n", leftSpeed, rightSpeed);
-        leftLeader.set(leftSpeed);
-        rightLeader.set(rightSpeed);
     }
 
     @Override
