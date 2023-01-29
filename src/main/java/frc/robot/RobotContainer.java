@@ -10,11 +10,14 @@ package frc.robot;
 import java.util.ResourceBundle.Control;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.utils.Controller;
@@ -34,7 +37,7 @@ public class RobotContainer {
     private Command driveCommand;
     private DriveTrain driveTrain;
 
-    private final boolean RUN_AUTO = true;
+    private final boolean RUN_AUTO = false;
 
     // inputs for drive train
     private UserAnalog speedDriveTrain;
@@ -42,7 +45,9 @@ public class RobotContainer {
     private UserAnalog forwardTurbo;
     private UserAnalog joystickRotationDriveTrain;
 
+
     public static double RC_MAX_SPEED;
+    public static final AHRS navx = new AHRS();
 
     // The robot's inputs that it recieves from the controller are defined here
 
@@ -67,6 +72,14 @@ public class RobotContainer {
             forwardTurbo,
             joystickRotationDriveTrain
         );
+
+        Controller.bindCommand(
+            Controller.PRIMARY,
+            Controller.BUTTON_B,
+            new BalanceCommand(navx.getRoll(), driveTrain)
+        );
+
+        driveTrain.setDefaultCommand(driveCommand);
     }
 
     /**
@@ -105,6 +118,7 @@ public class RobotContainer {
         // out.
         if (RUN_AUTO)
             autoCommand.cancel();
+
     }
 
     public Command getAutonomousCommand() {

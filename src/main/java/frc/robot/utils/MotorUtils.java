@@ -2,11 +2,13 @@ package frc.robot.utils;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 public class MotorUtils {
     public static TalonSRX initTalonSRX(int motorID) {
@@ -35,6 +37,13 @@ public class MotorUtils {
         motor.configFactoryDefault();
         motor.setNeutralMode(NeutralMode.Coast);
         motor.configClosedloopRamp(2);
+        return motor;
+    }
+
+    public static WPI_VictorSPX initWPIVictorSPX(int motorID) {
+        var motor = new WPI_VictorSPX(motorID);
+        motor.configFactoryDefault();
+        motor.setNeutralMode(NeutralMode.Coast);
         return motor;
     }
 

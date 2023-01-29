@@ -20,6 +20,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.apriltag.AprilTagDetector.Config;
@@ -32,13 +33,13 @@ import edu.wpi.first.apriltag.AprilTagDetector.Config;
 public class Robot extends TimedRobot {
 
     public static DriveTrain driveTrain;
-    // private RobotContainer m_robotContainer;
+    private RobotContainer m_robotContainer = new RobotContainer();
 
     // messing around w/ apriltag detector & video stuff
     private AprilTagDetector detector = new AprilTagDetector();
 
     private CvSource out, out2;
-    private VisionThread m_VisionThread;
+    private VisionThread aprilThread, coneThread;
 
     /**
      * This function is run when the robot is first started up and should be used for any initialization code.
@@ -63,7 +64,7 @@ public class Robot extends TimedRobot {
         out2 = CameraServer.putVideo("bw", 480, 270);
 
         // seperate thread for running vision code
-        var aprilThread = new VisionThread(cam, mat -> {
+        aprilThread = new VisionThread(cam, mat -> {
             // create matrix for modifications, and copy input from camera
             Mat tempMat = Mat.zeros(mat.size(), mat.type());
             mat.copyTo(tempMat);
@@ -101,7 +102,7 @@ public class Robot extends TimedRobot {
         // run thread
         // aprilThread.start();
 
-        var thread = new VisionThread(cam, mat -> {
+        coneThread = new VisionThread(cam, mat -> {
             // look for yellow pixels in picture
             var mat2 = mat.clone();
             Core.inRange(mat, new Scalar(0, 75, 75), new Scalar(75, 255, 255), mat);
@@ -115,7 +116,7 @@ public class Robot extends TimedRobot {
             out.putFrame(mat);
             out2.putFrame(mat2);
         }, a -> {});
-        thread.start();
+        // coneThread.start();
     }
 
     /**
@@ -136,6 +137,7 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        SmartDashboard.putNumber("curAngle: ", RobotContainer.navx.getRoll());
     }
 
     /**
@@ -165,7 +167,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        // m_robotContainer.startTeleop();
+        m_robotContainer.startTeleop();
     }
 
     /**

@@ -102,7 +102,8 @@ public class Controller {
      */
     public static JoystickButton bindCommand(int player, int button, Command cmd) {
         JoystickButton b = getJoystickButton(player, button);
-        b.onTrue(cmd);
+        b.whileTrue(cmd);
+        // b.whi
         return b;
     }
 

@@ -8,6 +8,8 @@ import java.util.concurrent.locks.LockSupport;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -25,11 +27,11 @@ import frc.robot.Constants;
  */
 @SuppressWarnings("unused")
 public class DriveTrain extends SubsystemBase implements AutoCloseable {
-    private WPI_TalonFX leftLeader;
-    private WPI_TalonFX leftFollower;
+    private WPI_TalonSRX leftLeader;
+    private WPI_VictorSPX leftFollower;
 
-    private WPI_TalonFX rightLeader;
-    private WPI_TalonFX rightFollower;
+    private WPI_TalonSRX rightLeader;
+    private WPI_VictorSPX rightFollower;
     // private AHRS gyro = new AHRS();
     private final DifferentialDriveOdometry m_odometry;
     private PIDController controller;
@@ -43,32 +45,18 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
      * Initializing drive train and talonmFX settings
      */
     public DriveTrain() {
-        leftLeader = initWPITalonFX(DRIVE_LEFT_LEADER_ID);
-        rightLeader = initWPITalonFX(DRIVE_RIGHT_LEADER_ID);
-        leftFollower = initWPITalonFX(DRIVE_LEFT_FOLLOWER_ID);
-        rightFollower = initWPITalonFX(DRIVE_RIGHT_FOLLOWER_ID);
+        leftLeader = initWPITalonSRX(LEFT_DRIVETRAIN_TALON);
+        rightLeader = initWPITalonSRX(RIGHT_DRIVETRAIN_TALON);
+        leftFollower = initWPIVictorSPX(LEFT_DRIVETRAIN_VICTOR);
+        rightFollower = initWPIVictorSPX(RIGHT_DRIVETRAIN_VICTOR);
 
         accelerometer = new BuiltInAccelerometer();
-        // leftLeader.config_kP(0, .5);
-        // rightLeader.config_kP(0, .5);
 
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
 
         m_odometry = new DifferentialDriveOdometry(new Rotation2d(), 0, 0);
 
-        // leftLeader.config_kP(0, .25);
-        // leftLeader.config_kI(0, 0);
-        // leftLeader.config_kD(0, 0);
-        // leftLeader.setControlFramePeriod(0, 20);
-        // leftLeader.configClosedloopRamp(1);
-
-        // rightLeader.config_kP(0, .25);
-        // rightLeader.config_kI(0, 0);
-        // rightLeader.config_kD(0, 0);
-        // rightLeader.setControlFramePeriod(0, 20);
-        // rightLeader.configClosedloopRamp(1);
-        // gyro.reset();
         previousRightPercentOutput = 0;
         previousLeftPercentOutput = 0;
     }
@@ -105,8 +93,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
 
         leftMotorOutput = limitAcceleration(leftMotorOutput, previousLeftPercentOutput);
         rightMotorOutput = limitAcceleration(rightMotorOutput, previousRightPercentOutput);
-
-        System.out.printf("left: %.02f, right : %.02f\n", leftMotorOutput, rightMotorOutput);
 
         leftLeader.set(-leftMotorOutput);
         rightLeader.set(rightMotorOutput);

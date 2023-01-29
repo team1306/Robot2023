@@ -27,10 +27,10 @@ public interface Constants {
     int EXTERNAL_INTAKE_ID = 10;
 
 
-    int DRIVE_RIGHT_LEADER_ID = 5;
-    int DRIVE_RIGHT_FOLLOWER_ID = 6;
-    int DRIVE_LEFT_LEADER_ID = 8;
-    int DRIVE_LEFT_FOLLOWER_ID = 9;
+    public static final int LEFT_DRIVETRAIN_TALON = 1;
+    public static final int RIGHT_DRIVETRAIN_TALON = 2;
+    public static final int LEFT_DRIVETRAIN_VICTOR = 3;
+    public static final int RIGHT_DRIVETRAIN_VICTOR = 4;
 
     // TODO set actual climber id
     int CLIMBER_MOTOR_ID = 0;
