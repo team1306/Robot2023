@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
         out = CameraServer.putVideo("out", 480, 270);
         out2 = CameraServer.putVideo("bw", 480, 270);
 
-        // seperate thread for running vision code
+        // seperate thread for apriltag detection
         aprilThread = new VisionThread(cam, mat -> {
             // create matrix for modifications, and copy input from camera
             Mat tempMat = Mat.zeros(mat.size(), mat.type());
@@ -96,12 +96,10 @@ public class Robot extends TimedRobot {
             // output frames to camera server in shuffleboard
             out.putFrame(mat);
             out2.putFrame(tempMat);
-        }, a -> {
-            // do nothing
-        });
-        // run thread
+        }, a -> {});
         // aprilThread.start();
 
+        // seperate thread for cone detection (primarily for the fun lol)
         coneThread = new VisionThread(cam, mat -> {
             // look for yellow pixels in picture
             var mat2 = mat.clone();
@@ -137,7 +135,6 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        SmartDashboard.putNumber("curAngle: ", RobotContainer.navx.getRoll());
     }
 
     /**

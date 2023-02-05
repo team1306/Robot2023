@@ -40,13 +40,12 @@ public class RobotContainer {
     private final boolean RUN_AUTO = false;
 
     // inputs for drive train
-    private UserAnalog speedDriveTrain;
     private UserAnalog backwardsTurbo;
     private UserAnalog forwardTurbo;
     private UserAnalog joystickRotationDriveTrain;
 
 
-    public static double RC_MAX_SPEED;
+    public static double RC_MAX_SPEED = .65, RC_MAX_ROTATION = .65;
     public static final AHRS navx = new AHRS();
 
     // The robot's inputs that it recieves from the controller are defined here
@@ -67,7 +66,6 @@ public class RobotContainer {
         driveTrain = new DriveTrain();
         driveCommand = new DriveCommand(
             driveTrain,
-            speedDriveTrain,
             backwardsTurbo,
             forwardTurbo,
             joystickRotationDriveTrain
@@ -88,7 +86,6 @@ public class RobotContainer {
      * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        speedDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LY);
         backwardsTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LTRIGGER);
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         joystickRotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
@@ -122,6 +119,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        // no auto command just yet
         return null;
     }
 
