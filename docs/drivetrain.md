@@ -53,7 +53,14 @@ From these 9 points, we can start to figure out how we'd get outputs for values 
 
 We can see a similar relationship with the right output and the line $\text{Drive} = \text{Rotation}$ for the right motor output, with the upper-left and lower-right values being positive and negative respectively.
 
-With that, we can produce a set of formulae: $$\begin{cases} \text{left}(\text{Drive},\text{Rotation}) = \text{Drive}+\text{Rotation} \\ \text{right}(\text{Drive},\text{Rotation}) = \text{Drive}-\text{Rotation} \end{cases}$$ which is derived from the two equations above, like for the right output: (as our output is 0 on the line) $$\text{Drive} = \text{Rotation} \implies \text{right}(\text{Drive},\text{Rotation}) = 0 = \text{Drive} - \text{Rotation}$$
+With that, we can produce a set of formulae: 
+
+$$\text{left}(\text{Drive},\text{Rotation}) = \text{Drive}+\text{Rotation}$$
+
+$$\text{right}(\text{Drive},\text{Rotation}) = \text{Drive}-\text{Rotation}$$
+
+
+which is derived from the two equations above, like for the right output: (as our output is 0 on the line) $$\text{Drive} = \text{Rotation} \implies \text{right}(\text{Drive},\text{Rotation}) = 0 = \text{Drive} - \text{Rotation}$$
 
 Since both $\text{Rotation}-\text{Drive}$ and $\text{Drive}-\text{Rotation}$ present valid solutions, we'd crosscheck with our points above. Since for input $(1,-1)$, the right output is positive, we'd choose the second expression, since $(1)-(-1)$ yields $2$, whereas $(-1)-(1)$ yields $-2$.
 
@@ -92,7 +99,24 @@ So, one way we could do so is by taking the maximum of the $\text{Drive}$ and $\
 
 Take a step back here and try to convince yourself that this formula also works in creating a gradient in all 4 quadrants, as we'll be utilizing it for both the right and left outputs.
 
-Applying our new gradients, we have a set of more desirable, but also more complicated formulae: (for brevity, I'll simply refer to the result of `gradient(Drive, Rotation)` for some input as `grad`) $$\begin{cases} \text{left}(\text{Drive},\text{Rotation}) = \begin{cases} \text{QI} = \text{grad}\\ \text{QII}  = \text{Drive}+\text{Rotation} \\ \text{QIII}  = \text{grad} \\ \text{QIV}  = \text{Drive}+\text{Rotation} \end{cases} \\\\  \text{right}(\text{Drive},\text{Rotation}) = \begin{cases} \text{QI} = \text{Drive}-\text{Rotation}\\ \text{QII}  = \text{grad} \\ \text{QIII}  = \text{Drive}-\text{Rotation} \\ \text{QIV}  = \text{grad} \end{cases} \end{cases}$$
+Applying our new gradients, we have a set of more desirable, but also more complicated formulae: (for brevity, I'll simply refer to the result of `gradient(Drive, Rotation)` for some input as `grad`) 
+
+```math
+\text{left}(\text{Drive},\text{Rotation}) = \begin{cases}
+    \text{QI} = \text{grad}\\
+    \text{QII}  = \text{Drive}+\text{Rotation} \\
+    \text{QIII}  = \text{grad} \\
+    \text{QIV}  = \text{Drive}+\text{Rotation}
+\end{cases}
+```
+```math
+\text{right}(\text{Drive},\text{Rotation}) = \begin{cases}
+    \text{QI} = \text{Drive}-\text{Rotation}\\
+    \text{QII}  = \text{grad} \\
+    \text{QIII}  = \text{Drive}-\text{Rotation} \\
+    \text{QIV}  = \text{grad} 
+\end{cases}
+```
 
 Which translates to the following, much nicer looking plot output mapping:
 
