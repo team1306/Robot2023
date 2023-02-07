@@ -53,12 +53,11 @@ From these 9 points, we can start to figure out how we'd get outputs for values 
 
 We can see a similar relationship with the right output and the line $\text{Drive} = \text{Rotation}$ for the right motor output, with the upper-left and lower-right values being positive and negative respectively.
 
-With that, we can produce a set of formulae: 
+With that, we can produce a set of formulae:
 
 $$\text{left}(\text{Drive},\text{Rotation}) = \text{Drive}+\text{Rotation}$$
 
 $$\text{right}(\text{Drive},\text{Rotation}) = \text{Drive}-\text{Rotation}$$
-
 
 which is derived from the two equations above, like for the right output: (as our output is 0 on the line) $$\text{Drive} = \text{Rotation} \implies \text{right}(\text{Drive},\text{Rotation}) = 0 = \text{Drive} - \text{Rotation}$$
 
@@ -99,7 +98,7 @@ So, one way we could do so is by taking the maximum of the $\text{Drive}$ and $\
 
 Take a step back here and try to convince yourself that this formula also works in creating a gradient in all 4 quadrants, as we'll be utilizing it for both the right and left outputs.
 
-Applying our new gradients, we have a set of more desirable, but also more complicated formulae: (for brevity, I'll simply refer to the result of `gradient(Drive, Rotation)` for some input as `grad`) 
+Applying our new gradients, we have a set of more desirable, but also more complicated formulae: (for brevity, I'll simply refer to the result of `gradient(Drive, Rotation)` for some input as `grad`)
 
 ```math
 \text{left}(\text{Drive},\text{Rotation}) = \begin{cases}
@@ -109,6 +108,7 @@ Applying our new gradients, we have a set of more desirable, but also more compl
     \text{QIV}  = \text{Drive}+\text{Rotation}
 \end{cases}
 ```
+
 ```math
 \text{right}(\text{Drive},\text{Rotation}) = \begin{cases}
     \text{QI} = \text{Drive}-\text{Rotation}\\
@@ -145,21 +145,21 @@ public void arcadeDrive(double drive, double rotation){
 
     if (drive >= 0) {
         if (rotation >= 0) {
-            // Quadrant 1 (+R, +S)
+            // Quadrant 1 (+R, +D)
             leftMotorOutput = grad;
             rightMotorOutput = drive - rotation;
         } else {
-            // Quadrant 2 (-R, +S)
+            // Quadrant 2 (-R, +D)
             leftMotorOutput = drive + rotation;
             rightMotorOutput = grad;
         }
     } else {
         if (rotation >= 0) {
-            // Quadrant 4 (+R, -S)
+            // Quadrant 4 (+R, -D)
             leftMotorOutput = drive + rotation;
             rightMotorOutput = grad;
         } else {
-            // Quadrant 3 (-R, -S)
+            // Quadrant 3 (-R, -D)
             leftMotorOutput = grad;
             rightMotorOutput = drive - rotation;
         }

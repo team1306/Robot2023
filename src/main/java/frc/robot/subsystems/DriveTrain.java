@@ -3,29 +3,19 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.*;
 import static frc.robot.utils.MotorUtils.*;
 
-import java.util.concurrent.locks.LockSupport;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 /**
  * Used by DriveTrain command to move robot Calculates output for each side of the drivetrain
  */
-@SuppressWarnings("unused")
 public class DriveTrain extends SubsystemBase implements AutoCloseable {
     private WPI_TalonSRX leftLeader;
     private WPI_VictorSPX leftFollower;
@@ -33,12 +23,9 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     private WPI_TalonSRX rightLeader;
     private WPI_VictorSPX rightFollower;
     private final DifferentialDriveOdometry m_odometry;
-    private PIDController controller;
-
-    private BuiltInAccelerometer accelerometer;
 
     /**
-     * Initializing drive train and talonmFX settings
+     * Initializing drive train and talonFX settings
      */
     public DriveTrain() {
         leftLeader = initWPITalonSRX(LEFT_DRIVETRAIN_TALON);
@@ -46,8 +33,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         leftFollower = initWPIVictorSPX(LEFT_DRIVETRAIN_VICTOR);
         rightFollower = initWPIVictorSPX(RIGHT_DRIVETRAIN_VICTOR);
 
-        accelerometer = new BuiltInAccelerometer();
-
+        // have the followers follow the leaders (they will output the same values)
         leftFollower.follow(leftLeader);
         rightFollower.follow(rightLeader);
 
@@ -67,27 +53,28 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         // speed is -1 to 1, rotation is also -1 to 1
         if (speed >= 0) {
             if (rotation >= 0) {
-                // Quadrant 1 (R > 0, S > 0)
+                // Quadrant 1 (+R, +S)
                 leftMotorOutput = maxInput;
                 rightMotorOutput = speed - rotation;
             } else {
-                // Quadrant 2 (R < 0, S > 0)
+                // Quadrant 2 (-R, +S)
                 leftMotorOutput = speed + rotation;
                 rightMotorOutput = maxInput;
             }
         } else {
             if (rotation >= 0) {
-                // Quadrant 4 (R > 0, S < 0)
+                // Quadrant 4 (+R, -S)
                 leftMotorOutput = speed + rotation;
                 rightMotorOutput = maxInput;
             } else {
-                // Quadrant 3 (R < 0, S < 0)
+                // Quadrant 3 (-R, -S)
                 leftMotorOutput = maxInput;
                 rightMotorOutput = speed - rotation;
             }
         }
 
         // invert right output to account for motors being flipped around on robots
+        // since followers are following leaders, they will also have these outputs
         leftLeader.set(leftMotorOutput);
         rightLeader.set(-rightMotorOutput);
     }
