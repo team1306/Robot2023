@@ -67,21 +67,21 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         // speed is -1 to 1, rotation is also -1 to 1
         if (speed >= 0) {
             if (rotation >= 0) {
-                // Quadrant 1 (S > 0, R > 0)
+                // Quadrant 1 (R > 0, S > 0)
                 leftMotorOutput = maxInput;
                 rightMotorOutput = speed - rotation;
             } else {
-                // Quadrant 4 (S > 0, R < 0)
+                // Quadrant 2 (R < 0, S > 0)
                 leftMotorOutput = speed + rotation;
                 rightMotorOutput = maxInput;
             }
         } else {
             if (rotation >= 0) {
-                // Quadrant 2 (S < 0, R > 0)
+                // Quadrant 4 (R > 0, S < 0)
                 leftMotorOutput = speed + rotation;
                 rightMotorOutput = maxInput;
             } else {
-                // Quadrant 3 (S < 0, R < 0)
+                // Quadrant 3 (R < 0, S < 0)
                 leftMotorOutput = maxInput;
                 rightMotorOutput = speed - rotation;
             }
