@@ -11,7 +11,9 @@ In an Arcade drive system, we take input in the form of two values, both between
 
 when drive is positive, the robot moves forward, when speed is negative, the robot moves backward. Likewise, when rotation is positive, the robot rotates right (clockwise), and when rotation is negative, the robot rotates left (counterclockwise).
 
-![example of a labeled controller](.\\Images\\labeledController.png)
+<p align="center">
+  <img src="Images\labeledController.png" alt = "example of a labeled controller, with the triggers marked with blue arrows and the left joystick X axis marked with red arrows"/ width="600">
+</p>
 
 This is in contrast with a more simplistic "Tank" drive system, wherein 2 inputs in $[-1, 1]$ are also taken, but instead, they represent the outputs of the left and right sides of the robot directly (e.g. the Y axes of the Left and Right joysticks.)
 
