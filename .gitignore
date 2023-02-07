@@ -1,6 +1,14 @@
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
 
+# project relevant things
+
+# creating graphs for docs, not necesssary for the project
+# also so I don't accident commit dumb stuff lol
+docs/*.ipynb
+
+# end project relevant things
+
 ### C++ ###
 # Prerequisites
 *.d
