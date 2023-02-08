@@ -62,8 +62,7 @@ public class BalanceCommand extends CommandBase {
 
         // clamp in case of monkey business
         output = MathUtil.clamp(output, -1, 1);
-        // our robot is kinda weird, so invert the output, also we don't wanna rotate
-        driveTrain.arcadeDrive(-output, 0);
+        driveTrain.arcadeDrive(output, 0);
 
         // update values for next execution
         prevErr = error;

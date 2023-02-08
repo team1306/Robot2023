@@ -6,6 +6,7 @@ import static frc.robot.utils.MotorUtils.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -47,6 +48,10 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
      * @param rotation rotation from joystick triggers
      */
     public void arcadeDrive(double speed, double rotation) {
+        // clamp inputs for no funny business
+        speed = MathUtil.clamp(speed, -1, 1);
+        rotation = MathUtil.clamp(rotation, -1, 1);
+
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
         double leftMotorOutput, rightMotorOutput;
 
