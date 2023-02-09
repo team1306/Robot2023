@@ -91,8 +91,8 @@ To remedy this, we'd want to create an artificial gradient of sorts, one that st
 
 How might such a gradient be made? Looking at the graph, we see the gradient is split by the line $\text{Drive} = \text{Rotation}$.
 
-- Above the line, when $\text{Drive} \gt \text{Rotation}$, the output is just the value of $\text{Drive}$
-- Below the line, when $\text{Drive} \gt \text{Rotation}$, the output is just the value of $\text{Rotation}$
+- Above the line, when $\text{Drive} > \text{Rotation}$, the output is just the value of $\text{Drive}$
+- Below the line, when $\text{Drive} < \text{Rotation}$, the output is just the value of $\text{Rotation}$
 
 So, one way we could do so is by taking the maximum of the $\text{Drive}$ and $\text{Rotation}$ inputs. A similar process can be used for rectifying the formula in Quadrant III, except since we're dealing with negatives there, we'd take the maximum of the absolute values, and then multiply it by the sign of the $\text{Drive}$: $$\text{gradient}(\text{Drive}, \text{Rotation}) = \text{sign}(\text{Drive})\cdot\max(|\text{Drive}|, |\text{Rotation}|)$$
 
