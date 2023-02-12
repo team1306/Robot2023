@@ -1,7 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.PIDController;
+// import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
@@ -17,56 +18,27 @@ public class BalanceCommand extends CommandBase {
     private static final double KI = 0;
     private static final double KD = 0.003;
 
-    private double desiredAngle;
     private DriveTrain driveTrain;
-
-    // accumulated and previous errors to compute derivative and integral components
-    private double accumErr = 0;
-    private double prevErr = Double.MAX_VALUE;
-
-    // timer to compute delta time between executions
-    private Timer timer = new Timer();
-    private double prevTime = timer.get();
+    private PIDController pid;
 
     public BalanceCommand(double idealAngle, DriveTrain driveTrain) {
-        this.desiredAngle = idealAngle;
         this.driveTrain = driveTrain;
+        pid = new PIDController(KP, KI, KD);
+        pid.setSetpoint(idealAngle);
         addRequirements(driveTrain);
-        timer.start();
     }
 
 
     @Override
-    public void initialize() {
-        // reset timer and other values
-        timer.reset();
-        accumErr = 0;
-        prevErr = Double.MAX_VALUE; // dummy value to indicate uninitialized
-    }
+    public void initialize() {}
 
     @Override
     public void execute() {
         double curAng = RobotContainer.navx.getRoll();
-        double error = desiredAngle - curAng;
 
-        // initialize previous error if necessary
-        if (prevErr == Double.MAX_VALUE)
-            prevErr = error;
-
-        // compute error
-        double deltaErr = (error - prevErr) / (timer.get() - prevTime);
-        accumErr += error;
-
-        // compute output from 3 components
-        double output = KP * error + KI * accumErr + KD * deltaErr;
-
-        // clamp in case of monkey business
-        output = MathUtil.clamp(output, -1, 1);
-        driveTrain.arcadeDrive(output, 0);
-
-        // update values for next execution
-        prevErr = error;
-        prevTime = timer.get();
+        var out = MathUtil.clamp(pid.calculate(curAng), -1, 1);
+        System.out.printf("%.02f : %.02f\n", pid.getSetpoint(), out);
+        driveTrain.arcadeDrive(out, 0);
     }
 
     @Override
