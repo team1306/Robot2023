@@ -19,10 +19,26 @@ import edu.wpi.first.math.util.Units;
  */
 @SuppressWarnings("unused")
 public interface Constants {
-    int LEFT_DRIVETRAIN_TALON = 1;
-    int RIGHT_DRIVETRAIN_TALON = 2;
-    int LEFT_DRIVETRAIN_VICTOR = 3;
-    int RIGHT_DRIVETRAIN_VICTOR = 4;
+    // ============ CAN IDS for Testing w/ Turbo =============
+    // int LEFT_DRIVETRAIN_TALON = 1;
+    // int RIGHT_DRIVETRAIN_TALON = 2;
+    // int LEFT_DRIVETRAIN_VICTOR = 3;
+    // int RIGHT_DRIVETRAIN_VICTOR = 4;
+
+    // ============ Current Year CAN IDs ====================
+    // drivetrain IDs
+    int SPARK_FAR_LEFT = 1;
+    int SPARK_NEAR_LEFT = 2;
+    int SPARK_NEAR_RIGHT = 3;
+    int SPARK_FAR_RIGHT = 4;
+    // grabber ID
+    int SPARK_CENTER = 5;
+    // intake IDs
+    int TALON_FAR_RIGHT = 6;
+    int TALON_NEAR_RIGHT = 7;
+    int TALON_NEAR_LEFT = 8;
+    int TALON_FAR_LEFT = 9;
+
 
     // double TRACK_WIDTH_METERS = .60;
     // double MAX_SPEED_MPS = 4.67;

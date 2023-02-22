@@ -28,8 +28,4 @@ public class SomeTest {
         HAL.shutdown();
         dtrain.close();
     }
-
-    @Test
-    public void test1() {
-    }
 }
