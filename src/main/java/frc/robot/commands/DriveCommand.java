@@ -46,9 +46,8 @@ public class DriveCommand extends CommandBase {
         double spd = MathUtil.applyDeadband(forwardTurbo.get() - backwardsTurbo.get(), 0.05);
         double rotation = MathUtil.applyDeadband(joystickRotation.get(), 0.05);
 
-        driveTrain.arcadeDrive(
-            RobotContainer.RC_MAX_SPEED * spd,
-            RobotContainer.RC_MAX_ROTATION * rotation
-        );
+        // TODO possible issues w/ speed being flipped?
+        driveTrain
+            .arcadeDrive(RobotContainer.maxSpeed * spd, RobotContainer.maxRotation * rotation);
     }
 }

@@ -20,6 +20,8 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.apriltag.AprilTagDetector.Config;
@@ -97,24 +99,23 @@ public class Robot extends TimedRobot {
             out.putFrame(mat);
             out2.putFrame(tempMat);
         }, a -> {});
-        // aprilThread.start();
 
-        // seperate thread for cone detection (primarily for the fun lol)
-        coneThread = new VisionThread(cam, mat -> {
-            // look for yellow pixels in picture
-            var mat2 = mat.clone();
-            Core.inRange(mat, new Scalar(0, 75, 75), new Scalar(75, 255, 255), mat);
-            Imgproc.GaussianBlur(mat, mat, new Size(41, 41), 0);
+        var trueAprilThread = new VisionThread(cam, mat -> {
+            // convert to grayscale and split by brightness: => 120 -> white and < 120 -> black
+            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
             Imgproc.threshold(mat, mat, 120, 255, Imgproc.THRESH_BINARY);
-            var moments = Imgproc.moments(mat);
-            var x = moments.get_m10() / moments.get_m00();
-            var y = moments.get_m01() / moments.get_m00();
-            Imgproc.circle(mat2, new Point(x, y), 5, new Scalar(0, 255, 0), -1);
-            // Core.inRange(mat, new Scalar(138, 105, 0), new Scalar(255, 250, 101), mat);
-            out.putFrame(mat);
-            out2.putFrame(mat2);
+            // detect tags
+            var dets = detector.detect(mat);
+            for (var det : dets) {
+                // only valid tags from 1 to 8
+                if (det.getId() > 8 || det.getId() < 1)
+                    continue;
+                // draw center marking
+                System.out.println("detected!");
+            }
         }, a -> {});
-        // coneThread.start();
+
+        // aprilThread.start();
     }
 
     /**
@@ -135,6 +136,10 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        // use a max speed/rotation provided in shuffleboard
+        // TODO maybe remove when in competition (?)
+        RobotContainer.maxSpeed = SmartDashboard.getNumber("Max Speed", 0.4);
+        RobotContainer.maxRotation = SmartDashboard.getNumber("Max Rotation", 0.4);
     }
 
     /**

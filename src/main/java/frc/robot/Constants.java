@@ -19,13 +19,13 @@ import edu.wpi.first.math.util.Units;
  */
 @SuppressWarnings("unused")
 public interface Constants {
-    // ============ CAN IDS for Testing w/ Turbo =============
+    // ============= CAN IDS for Testing w/ Turbo =============
     // int LEFT_DRIVETRAIN_TALON = 1;
     // int RIGHT_DRIVETRAIN_TALON = 2;
     // int LEFT_DRIVETRAIN_VICTOR = 3;
     // int RIGHT_DRIVETRAIN_VICTOR = 4;
 
-    // ============ Current Year CAN IDs ====================
+    // ================= Current Year CAN IDs =================
     // drivetrain IDs
     int SPARK_FAR_LEFT = 1;
     int SPARK_NEAR_LEFT = 2;

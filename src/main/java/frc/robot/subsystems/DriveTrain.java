@@ -6,6 +6,7 @@ import static frc.robot.utils.MotorUtils.*;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -22,11 +23,10 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
      * Initializing drive train and talonFX settings
      */
     public DriveTrain() {
-        // TODO find actual ids when drivetrain is built
-        leftLeader = initSparkMax(SPARK_CENTER);
-        leftFollower = initSparkMax(SPARK_CENTER);
-        rightLeader = initSparkMax(SPARK_CENTER);
-        rightFollower = initSparkMax(SPARK_CENTER);
+        leftLeader = initSparkMax(SPARK_FAR_LEFT);
+        leftFollower = initSparkMax(SPARK_NEAR_LEFT);
+        rightLeader = initSparkMax(SPARK_FAR_RIGHT);
+        rightFollower = initSparkMax(SPARK_NEAR_RIGHT);
 
         // have the followers follow the leaders (they will output the same values)
         leftFollower.follow(leftLeader);
@@ -70,6 +70,8 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
             }
         }
 
+        SmartDashboard.putNumber("left", leftMotorOutput);
+        SmartDashboard.putNumber("right", -rightMotorOutput);
         // invert right output to account for motors being flipped around on robots
         // since followers are following leaders, they will also have these outputs
         leftLeader.set(leftMotorOutput);

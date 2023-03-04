@@ -44,8 +44,7 @@ public class RobotContainer {
     private UserAnalog forwardTurbo;
     private UserAnalog joystickRotationDriveTrain;
 
-
-    public static double RC_MAX_SPEED = .65, RC_MAX_ROTATION = .65;
+    public static double maxSpeed = .4, maxRotation = .4;
     public static final AHRS navx = new AHRS();
 
     // The robot's inputs that it recieves from the controller are defined here
