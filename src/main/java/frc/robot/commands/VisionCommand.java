@@ -18,7 +18,6 @@ public class VisionCommand extends CommandBase {
 
     @Override
     public void execute() {
-        Mat m = new Mat();
         var time = cvSink.grabFrame(m);
         if (time == 0)
             System.out.println("uh oh");

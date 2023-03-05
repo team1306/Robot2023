@@ -78,6 +78,12 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         rightLeader.set(-rightMotorOutput);
     }
 
+    // test individual sides for testings (best description poggers)
+    public void testDrive(double left, double right) {
+        leftLeader.set(left);
+        rightLeader.set(right);
+    }
+
     @Override
     public void close() throws Exception {
         leftLeader.close();

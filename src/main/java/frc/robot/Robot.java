@@ -58,62 +58,62 @@ public class Robot extends TimedRobot {
         detector.setConfig(config);
 
         // get camera input
-        var cam = CameraServer.startAutomaticCapture();
-        cam.setResolution(480, 270);
+        // var cam = CameraServer.startAutomaticCapture();
+        // cam.setResolution(480, 270);
 
         // output video stream, one for color & markings, one for black & white
         out = CameraServer.putVideo("out", 480, 270);
         out2 = CameraServer.putVideo("bw", 480, 270);
 
         // seperate thread for apriltag detection
-        aprilThread = new VisionThread(cam, mat -> {
-            // create matrix for modifications, and copy input from camera
-            Mat tempMat = Mat.zeros(mat.size(), mat.type());
-            mat.copyTo(tempMat);
-            // convert to grayscale and split by brightness: => 120 -> white and < 120 -> black
-            Imgproc.cvtColor(tempMat, tempMat, Imgproc.COLOR_BGR2GRAY);
-            Imgproc.threshold(tempMat, tempMat, 120, 255, Imgproc.THRESH_BINARY);
-            // detect tags
-            var dets = detector.detect(tempMat);
-            for (var det : dets) {
-                // only valid tags from 1 to 8
-                if (det.getId() > 8 || det.getId() < 1)
-                    continue;
-                // draw center marking
-                Imgproc.drawMarker(
-                    mat,
-                    new Point(det.getCenterX(), det.getCenterY()),
-                    new Scalar(0, 255, 0)
-                );
-                // corners are stored as x1, y1, x2, y2, etc.
-                for (int i = 0; i < det.getCorners().length / 2; i++) {
-                    // draw corner markings
-                    Imgproc.drawMarker(
-                        mat,
-                        new Point(det.getCornerX(i), det.getCornerY(i)),
-                        new Scalar(0, 0, 255)
-                    );
-                }
-            }
-            // output frames to camera server in shuffleboard
-            out.putFrame(mat);
-            out2.putFrame(tempMat);
-        }, a -> {});
+        // aprilThread = new VisionThread(cam, mat -> {
+        // // create matrix for modifications, and copy input from camera
+        // Mat tempMat = Mat.zeros(mat.size(), mat.type());
+        // mat.copyTo(tempMat);
+        // // convert to grayscale and split by brightness: => 120 -> white and < 120 -> black
+        // Imgproc.cvtColor(tempMat, tempMat, Imgproc.COLOR_BGR2GRAY);
+        // Imgproc.threshold(tempMat, tempMat, 120, 255, Imgproc.THRESH_BINARY);
+        // // detect tags
+        // var dets = detector.detect(tempMat);
+        // for (var det : dets) {
+        // // only valid tags from 1 to 8
+        // if (det.getId() > 8 || det.getId() < 1)
+        // continue;
+        // // draw center marking
+        // Imgproc.drawMarker(
+        // mat,
+        // new Point(det.getCenterX(), det.getCenterY()),
+        // new Scalar(0, 255, 0)
+        // );
+        // // corners are stored as x1, y1, x2, y2, etc.
+        // for (int i = 0; i < det.getCorners().length / 2; i++) {
+        // // draw corner markings
+        // Imgproc.drawMarker(
+        // mat,
+        // new Point(det.getCornerX(i), det.getCornerY(i)),
+        // new Scalar(0, 0, 255)
+        // );
+        // }
+        // }
+        // // output frames to camera server in shuffleboard
+        // out.putFrame(mat);
+        // out2.putFrame(tempMat);
+        // }, a -> {});
 
-        var trueAprilThread = new VisionThread(cam, mat -> {
-            // convert to grayscale and split by brightness: => 120 -> white and < 120 -> black
-            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
-            Imgproc.threshold(mat, mat, 120, 255, Imgproc.THRESH_BINARY);
-            // detect tags
-            var dets = detector.detect(mat);
-            for (var det : dets) {
-                // only valid tags from 1 to 8
-                if (det.getId() > 8 || det.getId() < 1)
-                    continue;
-                // draw center marking
-                System.out.println("detected!");
-            }
-        }, a -> {});
+        // var trueAprilThread = new VisionThread(cam, mat -> {
+        // // convert to grayscale and split by brightness: => 120 -> white and < 120 -> black
+        // Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
+        // Imgproc.threshold(mat, mat, 120, 255, Imgproc.THRESH_BINARY);
+        // // detect tags
+        // var dets = detector.detect(mat);
+        // for (var det : dets) {
+        // // only valid tags from 1 to 8
+        // if (det.getId() > 8 || det.getId() < 1)
+        // continue;
+        // // draw center marking
+        // System.out.println("detected!");
+        // }
+        // }, a -> {});
 
         // aprilThread.start();
     }
@@ -138,8 +138,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         // use a max speed/rotation provided in shuffleboard
         // TODO maybe remove when in competition (?)
-        RobotContainer.maxSpeed = SmartDashboard.getNumber("Max Speed", 0.4);
-        RobotContainer.maxRotation = SmartDashboard.getNumber("Max Rotation", 0.4);
+        RobotContainer.maxSpeed = SmartDashboard.getNumber("Max Speed", 1);
+        RobotContainer.maxRotation = SmartDashboard.getNumber("Max Rotation", 1);
     }
 
     /**

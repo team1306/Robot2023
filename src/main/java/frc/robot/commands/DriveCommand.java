@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.utils.UserAnalog;
 import frc.robot.RobotContainer;
@@ -46,6 +47,8 @@ public class DriveCommand extends CommandBase {
         double spd = MathUtil.applyDeadband(forwardTurbo.get() - backwardsTurbo.get(), 0.05);
         double rotation = MathUtil.applyDeadband(joystickRotation.get(), 0.05);
 
+        SmartDashboard.putNumber("speed", spd);
+        SmartDashboard.putNumber("rot", rotation);
         // TODO possible issues w/ speed being flipped?
         driveTrain
             .arcadeDrive(RobotContainer.maxSpeed * spd, RobotContainer.maxRotation * rotation);

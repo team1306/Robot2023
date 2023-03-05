@@ -14,11 +14,14 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.TestDriveCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.utils.Controller;
 import frc.robot.utils.REVDigitBoard;
@@ -33,6 +36,16 @@ import frc.robot.utils.UserDigital;
 @SuppressWarnings("unused")
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
+
+    public static final ShuffleboardTab initConfigs = Shuffleboard.getTab("inital configurations");
+    static {
+        // VERY much wip,
+        // TODO mess around with shuffleboard tabs instead of smartdashboard
+        var rot = initConfigs.add("Max Rotation", 0.5);
+        var spd = initConfigs.add("Max Speed", 0.5);
+    }
+
+
     private Command autoCommand;
     private Command driveCommand;
     private DriveTrain driveTrain;
@@ -44,7 +57,7 @@ public class RobotContainer {
     private UserAnalog forwardTurbo;
     private UserAnalog joystickRotationDriveTrain;
 
-    public static double maxSpeed = .4, maxRotation = .4;
+    public static double maxSpeed, maxRotation;
     public static final AHRS navx = new AHRS();
 
     // The robot's inputs that it recieves from the controller are defined here
@@ -60,6 +73,7 @@ public class RobotContainer {
         // which controls the robot using standard controller inputs such as joysticks,
         // buttons, and triggers.
         Controller.init();
+
         configureButtonBindings();
 
         driveTrain = new DriveTrain();
@@ -73,7 +87,15 @@ public class RobotContainer {
         Controller.bindCommand(
             Controller.PRIMARY,
             Controller.BUTTON_B,
+            // TODO maybe make pitch instead for new robot
             new BalanceCommand(navx.getRoll(), driveTrain)
+        );
+
+        Controller.bindCommand(
+            Controller.PRIMARY,
+            Controller.BUTTON_X,
+            // left trigger -> left, right trigger -> right side
+            new TestDriveCommand(driveTrain, backwardsTurbo, forwardTurbo)
         );
 
         driveTrain.setDefaultCommand(driveCommand);
