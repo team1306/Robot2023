@@ -7,45 +7,25 @@
 
 package frc.robot;
 
-import java.util.ResourceBundle.Control;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.TestDriveCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.utils.Controller;
-import frc.robot.utils.REVDigitBoard;
 import frc.robot.utils.UserAnalog;
-import frc.robot.utils.UserDigital;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
  */
-@SuppressWarnings("unused")
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-
-    public static final ShuffleboardTab initConfigs = Shuffleboard.getTab("inital configurations");
-    static {
-        // VERY much wip,
-        // TODO mess around with shuffleboard tabs instead of smartdashboard
-        var rot = initConfigs.add("Max Rotation", 0.5);
-        var spd = initConfigs.add("Max Speed", 0.5);
-    }
-
-
     private Command autoCommand;
     private Command driveCommand;
     private DriveTrain driveTrain;
@@ -55,10 +35,25 @@ public class RobotContainer {
     // inputs for drive train
     private UserAnalog backwardsTurbo;
     private UserAnalog forwardTurbo;
-    private UserAnalog joystickRotationDriveTrain;
+    private UserAnalog rotationDriveTrain;
 
-    public static double maxSpeed, maxRotation;
+    // shuffleboard input
+    public static UserAnalog maxSpeed, maxRotation;
+
+    // gyro
     public static final AHRS navx = new AHRS();
+
+    // https://www.baeldung.com/java-static-instance-initializer-blocks
+    static {
+        double defaultSpd = 0.3, defaultRot = 0.3;
+        String spdKey = "Max Speed", rotKey = "Max Rotation";
+        // creates boxes in shuffleboard
+        SmartDashboard.putNumber(spdKey, defaultSpd);
+        SmartDashboard.putNumber(rotKey, defaultRot);
+        // create listeners
+        maxSpeed = () -> SmartDashboard.getNumber(spdKey, defaultSpd);
+        maxRotation = () -> SmartDashboard.getNumber(rotKey, defaultRot);
+    }
 
     // The robot's inputs that it recieves from the controller are defined here
 
@@ -66,24 +61,20 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices.
      */
     public RobotContainer() {
-        // initialize controller using Controller init method to ensure Controller is
-        // properly initialized when the
-        // Controllern is required to be initialized at the start of the game.
-        // Controller represents an xbox controller
-        // which controls the robot using standard controller inputs such as joysticks,
-        // buttons, and triggers.
+        // initalize controller (sets correct usb ports)
         Controller.init();
-
+        // bind buttons
         configureButtonBindings();
-
+        // create subsytems and commands
         driveTrain = new DriveTrain();
         driveCommand = new DriveCommand(
             driveTrain,
             backwardsTurbo,
             forwardTurbo,
-            joystickRotationDriveTrain
+            rotationDriveTrain
         );
 
+        // hold B button to autobalance (attempt to get to )
         Controller.bindCommand(
             Controller.PRIMARY,
             Controller.BUTTON_B,
@@ -91,6 +82,7 @@ public class RobotContainer {
             new BalanceCommand(navx.getRoll(), driveTrain)
         );
 
+        // click X button to use test mode (control each side of robot)
         Controller.bindCommand(
             Controller.PRIMARY,
             Controller.BUTTON_X,
@@ -107,9 +99,10 @@ public class RobotContainer {
      * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        // forwards/backwards input
         backwardsTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LTRIGGER);
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
-        joystickRotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
+        rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
     }
 
     /**
@@ -136,7 +129,6 @@ public class RobotContainer {
         // out.
         if (RUN_AUTO)
             autoCommand.cancel();
-
     }
 
     public Command getAutonomousCommand() {

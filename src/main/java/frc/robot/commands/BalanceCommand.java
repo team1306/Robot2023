@@ -3,11 +3,12 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
 
+// TODO potentially turn into PIDCommand object
+// (https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/PIDCommand.html)
 /**
  * Command to balance the robot based on navx roll angle
  */
@@ -18,6 +19,13 @@ public class BalanceCommand extends CommandBase {
     private static double KP = 0.03;
     private static double KI = 0;
     private static double KD = 0.003;
+
+    // TODO remove when constants are tuned
+    static { // set up values
+        SmartDashboard.putNumber("Balance kP", KP);
+        SmartDashboard.putNumber("Balance kI", KI);
+        SmartDashboard.putNumber("Balance kD", KD);
+    }
 
     private DriveTrain driveTrain;
     private PIDController pid;
