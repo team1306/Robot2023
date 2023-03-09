@@ -50,8 +50,6 @@ public class MotorUtils {
     // for use with NEO motor
     public static CANSparkMax initSparkMax(int motorID) {
         var motor = new CANSparkMax(motorID, MotorType.kBrushless);
-        motor.restoreFactoryDefaults();
-        motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
         return motor;
     }
 }

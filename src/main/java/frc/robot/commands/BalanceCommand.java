@@ -26,9 +26,9 @@ public class BalanceCommand extends CommandBase {
         this.driveTrain = driveTrain;
         // for live testing sake
         // TODO remove below when constants are tuned
-        KP = SmartDashboard.getNumber("Balance Kp", KP);
-        KI = SmartDashboard.getNumber("Balance Kp", KI);
-        KD = SmartDashboard.getNumber("Balance Kp", KD);
+        KP = SmartDashboard.getNumber("Balance kP", KP);
+        KI = SmartDashboard.getNumber("Balance kI", KI);
+        KD = SmartDashboard.getNumber("Balance kD", KD);
         // remove above when constants are tuned
         pid = new PIDController(KP, KI, KD);
         pid.setSetpoint(idealAngle);
