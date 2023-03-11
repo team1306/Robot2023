@@ -38,6 +38,8 @@ public interface Constants {
     int TALON_NEAR_RIGHT = 7;
     int TALON_NEAR_LEFT = 8;
     int TALON_FAR_LEFT = 9;
+    // arm IDs
+    int TALON_CENTER_ARM = 10;
 
 
     // double TRACK_WIDTH_METERS = .60;

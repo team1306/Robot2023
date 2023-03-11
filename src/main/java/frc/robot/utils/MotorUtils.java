@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -24,6 +25,13 @@ public class MotorUtils {
         return motor;
     }
 
+    public static TalonFX initTalonFX(int motorID) {
+        var motor = new TalonFX(motorID);
+        motor.configFactoryDefault();
+        motor.setNeutralMode(NeutralMode.Brake);
+        return motor;
+    }
+
     public static WPI_VictorSPX initWPIVictorSPX(int motorID) {
         var motor = new WPI_VictorSPX(motorID);
         motor.configFactoryDefault();
@@ -37,4 +45,5 @@ public class MotorUtils {
         motor.restoreFactoryDefaults();
         return motor;
     }
+
 }
