@@ -20,14 +20,14 @@ public class Arm extends SubsystemBase{
         this.upperLimitOfSensorPos = 185000.0;    
     }
 
-    public void extendArm(double axisY) {
+    public void extendArm(double axisRY) {
 
-        double motorOutput = axisY;
-        if(axisY < 0 && motor.getSelectedSensorPosition() < lowerLimitOfSensorPos){
+        double motorOutput = axisRY;
+        if(axisRY < 0 && motor.getSelectedSensorPosition() < lowerLimitOfSensorPos){
             motorOutput = 0.0;
         }  
         
-        if(axisY > 0 && motor.getSelectedSensorPosition() > upperLimitOfSensorPos){
+        if(axisRY > 0 && motor.getSelectedSensorPosition() > upperLimitOfSensorPos){
             motorOutput = 0.0;
         }
 
