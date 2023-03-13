@@ -11,10 +11,11 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
+import frc.robot.commands.ArmCommand;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.TestDriveCommand;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.utils.Controller;
 import frc.robot.utils.UserAnalog;
@@ -25,17 +26,26 @@ import frc.robot.utils.UserAnalog;
  * Instead, the structure of the robot (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-    private Command autoCommand;
-    private Command driveCommand;
-    private DriveTrain driveTrain;
 
     private final boolean RUN_AUTO = false;
+
+    // The robot's subsystems and commands are defined here...
+    // Subsystems
+    private DriveTrain driveTrain;
+    private Arm arm;
+
+    // Commands
+    private Command autoCommand;
+    private Command driveCommand;
+    private Command armCommand;
 
     // inputs for drive train
     private UserAnalog backwardsTurbo;
     private UserAnalog forwardTurbo;
     private UserAnalog rotationDriveTrain;
+
+    // inputs for arm
+    private UserAnalog armInput;
 
     // shuffleboard input
     public static UserAnalog maxSpeed, maxRotation;
@@ -65,14 +75,18 @@ public class RobotContainer {
         Controller.init();
         // bind buttons
         configureButtonBindings();
-        // create subsytems and commands
+        // create subsytems 
         driveTrain = new DriveTrain();
+        arm = new Arm();
+
+        // create commands
         driveCommand = new DriveCommand(
             driveTrain,
             backwardsTurbo,
             forwardTurbo,
             rotationDriveTrain
         );
+        armCommand = new ArmCommand(arm, armInput);
 
         // hold B button to autobalance (attempt to get to )
         Controller.bindCommand(
@@ -103,6 +117,8 @@ public class RobotContainer {
         backwardsTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LTRIGGER);
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
+        // arm input
+        armInput = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RY);
     }
 
     /**
@@ -129,6 +145,9 @@ public class RobotContainer {
         // out.
         if (RUN_AUTO)
             autoCommand.cancel();
+
+        driveCommand.schedule();
+        armCommand.schedule();
     }
 
     public Command getAutonomousCommand() {

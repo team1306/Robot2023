@@ -34,7 +34,7 @@ import edu.wpi.first.apriltag.AprilTagDetector.Config;
 public class Robot extends TimedRobot {
 
     public static DriveTrain driveTrain;
-    private RobotContainer m_robotContainer = new RobotContainer();
+    private RobotContainer m_robotContainer;
 
     // messing around w/ apriltag detector & video stuff
     private AprilTagDetector detector = new AprilTagDetector();
@@ -47,6 +47,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        m_robotContainer = new RobotContainer();
+        
         detector.addFamily("tag16h5");
         var config = new Config();
         config.numThreads = 4;

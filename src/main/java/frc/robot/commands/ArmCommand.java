@@ -6,18 +6,18 @@ import frc.robot.utils.UserAnalog;
 
 public class ArmCommand extends CommandBase{
     private Arm arm;
-    private UserAnalog length;
+    private UserAnalog armInput;
 
-    public ArmCommand(Arm arm, UserAnalog length) {
+    public ArmCommand(Arm arm, UserAnalog armInput) {
         this.arm = arm;
-        this.length = length;
+        this.armInput = armInput;
         this.addRequirements(arm);
         arm.setDefaultCommand(this);
     }
 
     @Override
     public void execute() {
-        arm.extendArm(length.get());
+        arm.extend(armInput.get());
     }
     
 }
