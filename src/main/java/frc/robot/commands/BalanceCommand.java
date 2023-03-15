@@ -4,7 +4,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
 
 // TODO potentially turn into PIDCommand object
@@ -50,7 +49,7 @@ public class BalanceCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double curAng = RobotContainer.navx.getRoll();
+        double curAng = DriveTrain.gyro.getRoll();
 
         var out = MathUtil.clamp(pid.calculate(curAng), -1, 1);
         SmartDashboard.putNumber("balance pid out", out);

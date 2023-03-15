@@ -39,16 +39,21 @@ public class Robot extends TimedRobot {
     // messing around w/ apriltag detector & video stuff
     private AprilTagDetector detector = new AprilTagDetector();
 
-    private CvSource out, out2;
-    private VisionThread aprilThread, coneThread;
+    private CvSource out;
+    private VisionThread aprilThread;
 
     /**
      * This function is run when the robot is first started up and should be used for any initialization code.
      */
     @Override
     public void robotInit() {
+        // create robot container
         m_robotContainer = new RobotContainer();
-        
+
+        // reset gyro
+        DriveTrain.gyro.reset();
+
+        // create apriltag detector
         detector.addFamily("tag16h5");
         var config = new Config();
         config.numThreads = 4;

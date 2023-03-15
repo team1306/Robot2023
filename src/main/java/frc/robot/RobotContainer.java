@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ArmCommand;
@@ -50,9 +48,6 @@ public class RobotContainer {
     // shuffleboard input
     public static UserAnalog maxSpeed, maxRotation;
 
-    // gyro
-    public static final AHRS navx = new AHRS();
-
     // https://www.baeldung.com/java-static-instance-initializer-blocks
     static {
         double defaultSpd = 0.3, defaultRot = 0.3;
@@ -75,7 +70,7 @@ public class RobotContainer {
         Controller.init();
         // bind buttons
         configureButtonBindings();
-        // create subsytems 
+        // create subsytems
         driveTrain = new DriveTrain();
         arm = new Arm();
 
@@ -93,7 +88,7 @@ public class RobotContainer {
             Controller.PRIMARY,
             Controller.BUTTON_B,
             // TODO maybe make pitch instead for new robot
-            new BalanceCommand(navx.getRoll(), driveTrain)
+            new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain)
         );
 
         // click X button to use test mode (control each side of robot)
