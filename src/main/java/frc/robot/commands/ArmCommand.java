@@ -4,7 +4,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.utils.UserAnalog;
 
-public class ArmCommand extends CommandBase{
+public class ArmCommand extends CommandBase {
+
     private Arm arm;
     private UserAnalog armInput;
 
@@ -17,7 +18,7 @@ public class ArmCommand extends CommandBase{
 
     @Override
     public void execute() {
-        arm.extend(armInput.get());
+        // arm.extend(armInput.get());
     }
-    
+
 }

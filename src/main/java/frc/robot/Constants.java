@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.util.Units;
  */
 @SuppressWarnings("unused")
 public interface Constants {
+    DifferentialDriveKinematics dk = new DifferentialDriveKinematics(Units.inchesToMeters(24));
     // ============= CAN IDS for Testing w/ Turbo =============
     // int LEFT_DRIVETRAIN_TALON = 1;
     // int RIGHT_DRIVETRAIN_TALON = 2;
@@ -41,7 +43,11 @@ public interface Constants {
     // arm IDs
     int TALON_CENTER_ARM = 10;
 
-
+    // ================== Solenoid Channels =====================
+    // TODO determine proper values
+    int GRABBER_1 = 1;
+    int GRABBER_2 = 2;
+    // ================== Miscellaneous values ==================
     // double TRACK_WIDTH_METERS = .60;
     // double MAX_SPEED_MPS = 4.67;
     // double MAX_ACCELERATION_MPSS = 3;

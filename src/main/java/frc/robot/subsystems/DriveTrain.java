@@ -8,12 +8,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 
 /**
  * Used by DriveTrain command to move robot Calculates output for each side of the drivetrain
@@ -22,9 +20,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
 
     public static final AHRS gyro = new AHRS();
     // track width of 24 inches
-    private static final DifferentialDriveKinematics dk = new DifferentialDriveKinematics(
-        Units.inchesToMeters(24)
-    );
     private DifferentialDriveOdometry odo;
 
     private CANSparkMax leftLeader;
