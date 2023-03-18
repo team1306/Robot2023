@@ -51,6 +51,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         lEncoder.setPosition(0);
         rEncoder.setPosition(0);
 
+        // odometry for measurement (potentially for autonomous)
         odo = new DifferentialDriveOdometry(
             gyro.getRotation2d(),
             // 6 inch diameter wheels

@@ -18,7 +18,7 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // arm.extend(armInput.get());
+        arm.runArm(armInput.get());
     }
 
 }

@@ -9,13 +9,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class Grabber extends SubsystemBase {
     // solenoids controlling the pneumatic cylinders
-    private Solenoid leftCylinder, rightCylinder;
+    private Solenoid solenoid;
     // whether the pistons are extended
     private boolean extended;
 
     public Grabber() {
-        leftCylinder = new Solenoid(PneumaticsModuleType.REVPH, 0);
-        rightCylinder = new Solenoid(PneumaticsModuleType.REVPH, 0);
+        solenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
     }
 
     /**
@@ -23,7 +22,6 @@ public class Grabber extends SubsystemBase {
      */
     public void toggle() {
         extended = !extended;
-        leftCylinder.set(extended);
-        rightCylinder.set(extended);
+        solenoid.set(extended);
     }
 }

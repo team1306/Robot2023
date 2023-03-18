@@ -60,9 +60,7 @@ public class Arm extends SubsystemBase {
     public Arm() {
         // start by reseting in our base state
         resetEncoder();
-        controller.reset(armEncoder.getPosition());
-
-        isClosedLoop = true;
+        enable();
     }
 
     // TODO make manual control method
@@ -73,8 +71,31 @@ public class Arm extends SubsystemBase {
         armEncoder.setPosition(0);
     }
 
+    // name carried over from mentioned repo; possibly something that describes it better
+    public void enable() {
+        isClosedLoop = true;
+        controller.reset(armEncoder.getPosition());
+    }
+
+    public void disable() {
+        isClosedLoop = false;
+        controller.setGoal(new State());
+    }
+
+    /**
+     * change the goal state of the arm
+     * 
+     * @param goal new goal state
+     */
     public void setGoal(State goal) {
         this.goal = goal;
+    }
+
+    public void runArm(double output) {
+        if (!isClosedLoop) {
+            // set to a limited output TODO maybe make slightly differnt
+            armMotor.set(filter.calculate(output));
+        }
     }
 
     @Override
