@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * contains controller mappings and related methods
@@ -139,4 +140,16 @@ public class Controller {
         }
         return new JoystickButton(joystick, button);
     }
+
+    /**
+     * creates trigger from given UserDigital. Triggers have some useful properties like included toggling behavior,
+     * debounces, and etc.
+     * 
+     * @param ud given userdigital
+     * @return resulting trigger value
+     */
+    public static Trigger asTrigger(UserDigital ud) {
+        return new Trigger(() -> ud.get());
+    }
 }
+
