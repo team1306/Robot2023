@@ -11,7 +11,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.UserAnalog;
 
 /**
  * Used by DriveTrain command to move robot Calculates output for each side of the drivetrain
@@ -119,10 +121,12 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         rightLeader.set(rightMotorOutput);
     }
 
-    // test individual sides for testings (best description poggers)
-    public void testDrive(double left, double right) {
-        leftLeader.set(left);
-        rightLeader.set(right);
+    // gives a command that allows the user to test drive individual sides
+    public Command testDrive(UserAnalog left, UserAnalog right) {
+        return run(() -> {
+            leftLeader.set(left.get());
+            rightLeader.set(right.get());
+        });
     }
 
     @Override
@@ -132,4 +136,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         leftFollower.close();
         rightFollower.close();
     }
+
+
 }
