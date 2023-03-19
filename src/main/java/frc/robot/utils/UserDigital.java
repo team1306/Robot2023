@@ -1,7 +1,8 @@
 package frc.robot.utils;
 
 /**
- * interface for digital (boolean) inputs to the robot
+ * interface for digital (boolean) inputs to the robot, essentially a tailored version of
+ * {@see java.util.function.BooleanSupplier}
  */
 public interface UserDigital {
 

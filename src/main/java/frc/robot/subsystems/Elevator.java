@@ -8,19 +8,15 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.MotorUtils;
-import frc.robot.utils.UserAnalog;
 
 /**
  * Controls the elevator portion for the robot, using a PID controller to extend to specific positions, with a manual
  * controller where the speed is bound to some modification of the input from a controller
  */
 public class Elevator extends SubsystemBase {
-    private boolean isClosedLoop;
 
     // stores useful constants related to the elevator subsystem
     public interface ElevatorConstants {
@@ -30,8 +26,8 @@ public class Elevator extends SubsystemBase {
         double KI = 0;
         double KD = 0;
         // trapezoidal profile configurations (limits on PID controller)
-        double MaxVelocityRadPerSec = 0;
-        double MaxAccelRadPerSec2 = 0;
+        double MaxVelocity = 3;
+        double MaxAccel = 0;
         // software bounds of rotation for the arm's motor.
         double MinAngle = 0;
         double MaxAngle = 0;
@@ -46,11 +42,11 @@ public class Elevator extends SubsystemBase {
         ElevatorConstants.KP,
         ElevatorConstants.KI,
         ElevatorConstants.KD,
-        new TrapezoidProfile.Constraints(
-            ElevatorConstants.MaxVelocityRadPerSec,
-            ElevatorConstants.MaxAccelRadPerSec2
-        )
+        new TrapezoidProfile.Constraints(ElevatorConstants.MaxVelocity, ElevatorConstants.MaxAccel)
     );
+
+    // mode the subsystem is in
+    private boolean isClosedLoop;
 
     public Elevator() {
         // reset encoder and controller
@@ -58,19 +54,24 @@ public class Elevator extends SubsystemBase {
         controller.reset(elevatorMotor.getSelectedSensorPosition());
     }
 
-    public Command runElevator(UserAnalog output) {
-        return this.run(() -> {
-            if (!isClosedLoop)
-                elevatorMotor.set(ControlMode.PercentOutput, output.get());
-        });
+    /**
+     * return the position of the elevator
+     * 
+     * @return the sensor position (or some modification of it)
+     */
+    private double getPosition() {
+        return elevatorMotor.getSelectedSensorPosition();
     }
 
-    // manual control
+    /**
+     * manually control the speed of the elevator with a given output value
+     * 
+     * @param output desired output for the elevator
+     */
     public void runElevator(double output) {
-        if (isClosedLoop)
-            return;
-
-        elevatorMotor.set(ControlMode.PercentOutput, filter.calculate(output));
+        if (!isClosedLoop) {
+            elevatorMotor.set(ControlMode.PercentOutput, filter.calculate(output));
+        }
     }
 
     /**
@@ -84,23 +85,24 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (!isClosedLoop)
-            return;
-        if (goal == null) {
-            controller.setGoal(new State(0, 0));
-        } else {
-            controller.setGoal(
-                // clamp the goal position to our allowed amount
-                new State(
-                    MathUtil.clamp(
-                        goal.position,
-                        ElevatorConstants.MinAngle,
-                        ElevatorConstants.MaxAngle
-                    ),
-                    goal.velocity
-                )
-            );
+        if (isClosedLoop) {
+            // if there isn't a goal for some reason, then set it to the default position
+            if (goal == null) {
+                controller.setGoal(new State(0, 0));
+            } else {
+                controller.setGoal(
+                    // clamp the goal position to our allowed amount
+                    new State(
+                        MathUtil.clamp(
+                            goal.position,
+                            ElevatorConstants.MinAngle,
+                            ElevatorConstants.MaxAngle
+                        ),
+                        goal.velocity
+                    )
+                );
+            }
+            elevatorMotor.setVoltage(controller.calculate(getPosition(), controller.getGoal()));
         }
-        elevatorMotor.setVoltage(controller.calculate(elevatorMotor.getSelectedSensorPosition()));
     }
 }

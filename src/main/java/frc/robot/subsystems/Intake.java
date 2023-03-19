@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -11,7 +11,7 @@ import frc.robot.utils.MotorUtils;
 
 public class Intake extends SubsystemBase {
     // our electronic components
-    private TalonSRX left, right;
+    private WPI_TalonSRX left, right;
     private Solenoid solenoid;
     // whether the intake is running (both initalized to false)
     private boolean running = false;
@@ -20,8 +20,8 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         // TODO replace with correct CAN IDs
-        left = MotorUtils.initTalonSRX(Constants.TALON_FAR_LEFT);
-        right = MotorUtils.initTalonSRX(Constants.TALON_FAR_RIGHT);
+        left = MotorUtils.initWPITalonSRX(Constants.TALON_FAR_LEFT);
+        right = MotorUtils.initWPITalonSRX(Constants.TALON_FAR_RIGHT);
         // probably should be inverted to produce net inward force
         right.setInverted(true);
         right.follow(left);

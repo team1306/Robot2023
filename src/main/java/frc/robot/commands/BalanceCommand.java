@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
-// TODO potentially turn into PIDCommand object
-// (https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/PIDCommand.html)
 /**
  * Command to balance the robot based on navx roll angle
  */
@@ -19,6 +17,7 @@ public class BalanceCommand extends CommandBase {
     private static double KI = 0;
     private static double KD = 0.003;
 
+    private final double MaxOutput = 0.5;
     // TODO remove when constants are tuned
     static { // set up values
         SmartDashboard.putNumber("Balance kP", KP);
@@ -27,6 +26,7 @@ public class BalanceCommand extends CommandBase {
     }
 
     private DriveTrain driveTrain;
+    // maybe use a profiled pid controller for better control?
     private PIDController pid;
 
     public BalanceCommand(double idealAngle, DriveTrain driveTrain) {
@@ -40,25 +40,21 @@ public class BalanceCommand extends CommandBase {
         pid = new PIDController(KP, KI, KD);
         pid.setSetpoint(idealAngle);
         addRequirements(driveTrain);
-
     }
 
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        pid.reset();
+    }
 
     @Override
     public void execute() {
+        // get current angle, and give that to the controller as feedback
         double curAng = DriveTrain.gyro.getRoll();
-
-        var out = MathUtil.clamp(pid.calculate(curAng), -1, 1);
+        // calcuate output, and clamp to a reasonble angle
+        var out = MathUtil.clamp(pid.calculate(curAng), -MaxOutput, MaxOutput);
         SmartDashboard.putNumber("balance pid out", out);
         driveTrain.arcadeDrive(out, 0);
-    }
-
-    @Override
-    public boolean isFinished() {
-        // run in perpetuity until interrupted by unpressing
-        return false;
     }
 }

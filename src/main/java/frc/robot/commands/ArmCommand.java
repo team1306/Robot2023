@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.utils.UserAnalog;
 
+/**
+ * command to manually run the arm using its runArm method
+ */
 public class ArmCommand extends CommandBase {
 
     private Arm arm;

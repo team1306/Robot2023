@@ -1,7 +1,7 @@
 package frc.robot.utils;
 
 /**
- * interface for analog inputs to the robot
+ * interface for analog inputs to the robot, essentially a tailored version of a DoubleSupplier
  */
 public interface UserAnalog {
 
