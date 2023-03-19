@@ -9,10 +9,10 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.TestDriveCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.utils.Controller;
@@ -25,7 +25,10 @@ import frc.robot.utils.UserAnalog;
  */
 public class RobotContainer {
 
+    // whether or not to run the autonomous command
     private final boolean RUN_AUTO = false;
+    // toggle for things only done during testing vs in competition
+    private final boolean DevMode = true;
 
     // The robot's subsystems and commands are defined here...
     // Subsystems
@@ -43,7 +46,7 @@ public class RobotContainer {
     private UserAnalog rotationDriveTrain;
 
     // inputs for arm
-    private UserAnalog armInput;
+    private UserAnalog elevatorInput;
 
     // shuffleboard input
     public static UserAnalog maxSpeed, maxRotation;
@@ -51,6 +54,7 @@ public class RobotContainer {
     // https://www.baeldung.com/java-static-instance-initializer-blocks
     static {
         double defaultSpd = 0.3, defaultRot = 0.3;
+        // smartdashboard keys
         String spdKey = "Max Speed", rotKey = "Max Rotation";
         // creates boxes in shuffleboard
         SmartDashboard.putNumber(spdKey, defaultSpd);
@@ -75,31 +79,40 @@ public class RobotContainer {
         arm = new Arm();
 
         // create commands
+        // drive command
         driveCommand = new DriveCommand(
             driveTrain,
             backwardsTurbo,
             forwardTurbo,
             rotationDriveTrain
         );
-        armCommand = new ArmCommand(arm, armInput);
+        driveTrain.setDefaultCommand(driveCommand);
 
-        // hold B button to autobalance (attempt to get to )
+        // arm commond
+        armCommand = new ArmCommand(arm, elevatorInput);
+
+        // autobalance command
+        // hold B button to autobalance (attempt to get to level state -- start on balance beam)
         Controller.bindCommand(
             Controller.PRIMARY,
             Controller.BUTTON_B,
-            // TODO maybe make pitch instead for new robot
-            new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain)
+            // since RIO lying face up, it should use the pitch value
+            // using current measurement as baseline (flat) value to compare to
+            new BalanceCommand(DriveTrain.gyro.getPitch(), driveTrain)
         );
 
-        // click X button to use test mode (control each side of robot)
-        Controller.bindCommand(
-            Controller.PRIMARY,
-            Controller.BUTTON_X,
-            // left trigger -> left, right trigger -> right side
-            new TestDriveCommand(driveTrain, backwardsTurbo, forwardTurbo)
-        );
+        if (DevMode) {
+            // testdrive command, don't use in competition
+            // click X button to use test mode (control each side of robot)
+            Controller.bindCommand(
+                Controller.PRIMARY,
+                Controller.BUTTON_X,
+                // left trigger -> left, right trigger -> right side
+                driveTrain.testDrive(backwardsTurbo, forwardTurbo)
+            );
+        }
 
-        driveTrain.setDefaultCommand(driveCommand);
+
     }
 
     /**
@@ -113,7 +126,7 @@ public class RobotContainer {
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
         // arm input
-        armInput = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RY);
+        elevatorInput = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RY);
     }
 
     /**
@@ -136,7 +149,7 @@ public class RobotContainer {
     public void startTeleop() {
         // This makes sure that the autonomous stops running when teleop starts running.
         // If you want the autonomous to
-        // continue until interrupted by another command, remove this line or comment it
+        // continue until interrupted by another command, remove this or comment it
         // out.
         if (RUN_AUTO)
             autoCommand.cancel();
@@ -146,8 +159,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        // no auto command just yet
-        return null;
+        // TODO implement proper command sequence
+        // placeholder example: just drive forwards for 3 seconds
+        return Commands.run(() -> driveTrain.arcadeDrive(1, 0)).withTimeout(3);
     }
-
 }
