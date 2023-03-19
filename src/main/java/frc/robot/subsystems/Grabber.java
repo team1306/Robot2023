@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Grabber extends SubsystemBase {
     // solenoids controlling the pneumatic cylinders
     private Solenoid solenoid;
-    // whether the pistons are extended
-    private boolean extended;
 
     public Grabber() {
         solenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
@@ -21,7 +19,6 @@ public class Grabber extends SubsystemBase {
      * toggle the states of the pistons, extends if contracted and contract if extended
      */
     public void toggle() {
-        extended = !extended;
-        solenoid.set(extended);
+        solenoid.toggle();
     }
 }

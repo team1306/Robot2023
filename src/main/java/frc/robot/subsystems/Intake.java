@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -11,37 +11,37 @@ import frc.robot.utils.MotorUtils;
 
 public class Intake extends SubsystemBase {
     // our electronic components
-    private WPI_TalonSRX left, right;
-    private Solenoid leftCylinder, rightCylinder;
-    // whether the intake is running/deployed (both initalized to false)
-    private boolean running, lDeploy, rDeploy;
+    private TalonSRX left, right;
+    private Solenoid solenoid;
+    // whether the intake is running (both initalized to false)
+    private boolean running = false;
+    // output of the motor when the intake is running
+    private final double speed = 0.25;
 
     public Intake() {
         // TODO replace with correct CAN IDs
-        left = MotorUtils.initWPITalonSRX(Constants.TALON_FAR_LEFT);
-        right = MotorUtils.initWPITalonSRX(Constants.TALON_FAR_RIGHT);
+        left = MotorUtils.initTalonSRX(Constants.TALON_FAR_LEFT);
+        right = MotorUtils.initTalonSRX(Constants.TALON_FAR_RIGHT);
         // probably should be inverted to produce net inward force
         right.setInverted(true);
         right.follow(left);
 
-        // TODO make sure ID of hub is 1 and find correct channel
-        leftCylinder = new Solenoid(PneumaticsModuleType.REVPH, 0);
+        // TODO find correct channel ID
+        solenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.INTAKE);
     }
 
-    public void toggleDeploy(boolean lExtend, boolean rExtend) {
-        // if they're the same, do nothing and exit early
-        if (lDeploy == lExtend)
-            return;
-        if (rDeploy == rExtend)
-            return;
-        // if they're different than retract/extend the correct side
-        lDeploy = lExtend;
-        rDeploy = rExtend;
-
-        leftCylinder.set(lExtend);
-        rightCylinder.set(rExtend);
+    /**
+     * toggle the solenoid: if retracted, extend the intake arms, otherwise retract them
+     */
+    public void toggleDeploy() {
+        solenoid.toggle();
     }
 
+    /**
+     * toggle whether the motors are running
+     * 
+     * @param running
+     */
     public void toggleRun(boolean running) {
         this.running = running;
     }
@@ -50,8 +50,8 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         // if running then spin the motors
         if (this.running) {
-            // TODO find a good value (or use voltage instead of percentage)
-            left.set(ControlMode.PercentOutput, 0.4);
+            // TODO find a good value
+            left.set(ControlMode.PercentOutput, speed);
         }
     }
 }
