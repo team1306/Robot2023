@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.utils.UserAnalog;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrain;
 
 /**
@@ -43,12 +42,14 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute() {
+        // apply deadband to both inputs
         double spd = MathUtil.applyDeadband(forwardTurbo.get() - backwardsTurbo.get(), 0.05);
         double rotation = MathUtil.applyDeadband(joystickRotation.get(), 0.05);
 
+        // maxspeed and maxrotation checks moved into Drivetrain class
         driveTrain.arcadeDrive(
-            RobotContainer.maxSpeed.get() * spd,
-            RobotContainer.maxRotation.get() * rotation
+            spd,
+            rotation
         );
     }
 }

@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.ArmCommand;
@@ -47,22 +46,6 @@ public class RobotContainer {
 
     // inputs for arm
     private UserAnalog elevatorInput;
-
-    // shuffleboard input
-    public static UserAnalog maxSpeed, maxRotation;
-
-    // https://www.baeldung.com/java-static-instance-initializer-blocks
-    static {
-        double defaultSpd = 0.3, defaultRot = 0.3;
-        // smartdashboard keys
-        String spdKey = "Max Speed", rotKey = "Max Rotation";
-        // creates boxes in shuffleboard
-        SmartDashboard.putNumber(spdKey, defaultSpd);
-        SmartDashboard.putNumber(rotKey, defaultRot);
-        // create listeners
-        maxSpeed = () -> SmartDashboard.getNumber(spdKey, defaultSpd);
-        maxRotation = () -> SmartDashboard.getNumber(rotKey, defaultRot);
-    }
 
     // The robot's inputs that it recieves from the controller are defined here
 

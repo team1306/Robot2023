@@ -42,7 +42,6 @@ public class BalanceCommand extends CommandBase {
         addRequirements(driveTrain);
     }
 
-
     @Override
     public void initialize() {
         pid.reset();

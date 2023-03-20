@@ -19,8 +19,24 @@ import frc.robot.utils.UserAnalog;
  * Used by DriveTrain command to move robot Calculates output for each side of the drivetrain
  */
 public class DriveTrain extends SubsystemBase implements AutoCloseable {
-
     public static final AHRS gyro = new AHRS();
+
+    // configuration input
+    private static UserAnalog maxSpeed, maxRotation;
+
+    // https://www.baeldung.com/java-static-instance-initializer-blocks
+    static {
+        double defaultSpd = 0.3, defaultRot = 0.3;
+        // smartdashboard keys
+        String spdKey = "Max Speed", rotKey = "Max Rotation";
+        // creates boxes in shuffleboard
+        SmartDashboard.putNumber(spdKey, defaultSpd);
+        SmartDashboard.putNumber(rotKey, defaultRot);
+        // create listeners
+        maxSpeed = () -> SmartDashboard.getNumber(spdKey, defaultSpd);
+        maxRotation = () -> SmartDashboard.getNumber(rotKey, defaultRot);
+    }
+
     // track width of 24 inches
     private DifferentialDriveOdometry odo;
 
@@ -30,11 +46,10 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     private CANSparkMax rightLeader;
     private CANSparkMax rightFollower;
 
-
     private RelativeEncoder lEncoder, rEncoder;
 
     /**
-     * Initializing drive train and talonFX settings
+     * Initializing drive train and motor settings
      */
     public DriveTrain() {
         leftLeader = initSparkMax(SPARK_FAR_LEFT);
@@ -81,15 +96,15 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     }
 
     /**
-     * Sets the talonFX speeds for the given speed and rotation
+     * Sets the motor speeds for the given speed and rotation
      * 
      * @param speed    speed from a joystick input
      * @param rotation rotation from joystick triggers
      */
     public void arcadeDrive(double speed, double rotation) {
         // clamp inputs for no funny business
-        speed = MathUtil.clamp(speed, -1, 1);
-        rotation = MathUtil.clamp(rotation, -1, 1);
+        speed = MathUtil.clamp(speed * maxSpeed.get(), -1, 1);
+        rotation = MathUtil.clamp(rotation * maxRotation.get(), -1, 1);
 
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
         double leftMotorOutput, rightMotorOutput;

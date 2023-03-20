@@ -26,7 +26,6 @@ public class Intake extends SubsystemBase {
         right.setInverted(true);
         right.follow(left);
 
-        // TODO find correct channel ID
         solenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.INTAKE);
     }
 

@@ -22,12 +22,12 @@ public class Elevator extends SubsystemBase {
     public interface ElevatorConstants {
         // TODO find proper values for all constants
         // PID gains
-        double KP = 0;
+        double KP = 0.2;
         double KI = 0;
         double KD = 0;
         // trapezoidal profile configurations (limits on PID controller)
         double MaxVelocity = 3;
-        double MaxAccel = 0;
+        double MaxAccel = 0.5;
         // software bounds of rotation for the arm's motor.
         double MinAngle = 0;
         double MaxAngle = 0;
