@@ -41,8 +41,8 @@ public class Intake extends SubsystemBase {
      * 
      * @param running
      */
-    public void toggleRun(boolean running) {
-        this.running = running;
+    public void toggleRun() {
+        this.running = !this.running;
     }
 
     @Override

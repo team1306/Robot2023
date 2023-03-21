@@ -58,6 +58,9 @@ public class RobotContainer {
     // inputs for intake
     private UserDigital toggleWheels, togglePnum;
 
+    // inputs for grabber
+    private UserDigital toggleGrabber;
+
     // The robot's inputs that it recieves from the controller are defined here
 
     /**
@@ -89,6 +92,18 @@ public class RobotContainer {
         elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
 
         // intake
+        // var intakeCommand = toggl
+
+        // if we want independent toggle control: make toggleDeploy/toggleRun take a parameter true/false
+        var depTrigger = Controller.asTrigger(togglePnum).debounce(0.05);
+        // toggling toggles pneumatics,
+        depTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleDeploy(), intake));
+        depTrigger.toggleOnTrue(Commands.runOnce(() -> intake.toggleDeploy(), intake));
+
+        var runTrigger = Controller.asTrigger(toggleWheels).debounce(0.05);
+        // toggling intake runner
+        runTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleRun(), intake));
+        runTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleRun(), intake));
 
         // grabber
 
@@ -131,9 +146,14 @@ public class RobotContainer {
         togglePnum = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_LBUMPER);
         toggleWheels = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_RBUMPER);
 
-        // arm input
+        // elevator input
         elevatorInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_RY);
 
+        // arm input
+        armInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_LY);
+
+        // grabber input
+        toggleGrabber = Controller.simpleButton(Controller.SECONDARY, Controller.BUTTON_B);
     }
 
     /**
