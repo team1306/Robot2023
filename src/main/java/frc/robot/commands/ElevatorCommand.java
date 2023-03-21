@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.utils.UserAnalog;
 
@@ -13,12 +14,12 @@ public class ElevatorCommand extends CommandBase {
     // input for running elevator
     private UserAnalog elevInput;
 
-    public ElevatorCommand(Elevator elevator, UserAnalog input) {
+    public ElevatorCommand(Elevator arm, UserAnalog input) {
         this.elevInput = input;
-        this.elevator = elevator;
+        this.elevator = arm;
 
-        this.addRequirements(elevator);
-        elevator.setDefaultCommand(this);
+        this.addRequirements(arm);
+        arm.setDefaultCommand(this);
     }
 
     @Override

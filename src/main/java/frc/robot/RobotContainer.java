@@ -7,15 +7,22 @@
 
 package frc.robot;
 
+import java.util.ResourceBundle.Control;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.ElevatorCommand;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.Intake;
 import frc.robot.utils.Controller;
 import frc.robot.utils.UserAnalog;
+import frc.robot.utils.UserDigital;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -33,11 +40,12 @@ public class RobotContainer {
     // Subsystems
     private DriveTrain driveTrain;
     private Arm arm;
+    private Elevator elevator;
+    private Intake intake;
+    private Grabber grabber;
 
     // Commands
-    private Command autoCommand;
-    private Command driveCommand;
-    private Command armCommand;
+    private Command autoCommand, driveCommand, elevatorCommand, intakeCommand;
 
     // inputs for drive train
     private UserAnalog backwardsTurbo;
@@ -45,7 +53,10 @@ public class RobotContainer {
     private UserAnalog rotationDriveTrain;
 
     // inputs for arm
-    private UserAnalog elevatorInput;
+    private UserAnalog elevatorInput, armInput;
+
+    // inputs for intake
+    private UserDigital toggleWheels, togglePnum;
 
     // The robot's inputs that it recieves from the controller are defined here
 
@@ -60,6 +71,9 @@ public class RobotContainer {
         // create subsytems
         driveTrain = new DriveTrain();
         arm = new Arm();
+        elevator = new Elevator();
+        intake = new Intake();
+        grabber = new Grabber();
 
         // create commands
         // drive command
@@ -71,8 +85,12 @@ public class RobotContainer {
         );
         driveTrain.setDefaultCommand(driveCommand);
 
-        // arm commond
-        armCommand = new ArmCommand(arm, elevatorInput);
+        // elevator
+        elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
+
+        // intake
+
+        // grabber
 
         // autobalance command
         // hold B button to autobalance (attempt to get to level state -- start on balance beam)
@@ -104,12 +122,18 @@ public class RobotContainer {
      * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // forwards/backwards input
+        // drivetrain inputs
         backwardsTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LTRIGGER);
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
+
+        // intake inputs TODO work in progress, gotta find actual ones with Chris
+        togglePnum = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_LBUMPER);
+        toggleWheels = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_RBUMPER);
+
         // arm input
-        elevatorInput = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RY);
+        elevatorInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_RY);
+
     }
 
     /**
@@ -118,27 +142,22 @@ public class RobotContainer {
     public void startAuto() {
         autoCommand = getAutonomousCommand();
         if (RUN_AUTO) {
-            driveCommand.cancel();
+            // driveCommand.cancel();
             autoCommand.schedule();
         }
-        // System.out.println("startAuto() IS RUNNING.");
     }
 
     /**
      * start off teleop period by cancelling autonomous command and switching the drivetrain command to the user driving
      * command
-     * 
      */
     public void startTeleop() {
-        // This makes sure that the autonomous stops running when teleop starts running.
-        // If you want the autonomous to
-        // continue until interrupted by another command, remove this or comment it
-        // out.
-        if (RUN_AUTO)
+        // This makes sure that the autonomous stops running when teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove this or comment it out.
+        if (RUN_AUTO) {
             autoCommand.cancel();
+        }
 
-        driveCommand.schedule();
-        armCommand.schedule();
     }
 
     public Command getAutonomousCommand() {

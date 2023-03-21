@@ -3,6 +3,7 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -116,9 +117,14 @@ public class Controller {
      * @param callback callback to bind to specified button
      * @return the bound button in case other operations need to be done and to protect against trash collection
      */
-    public static JoystickButton bindCallback(int player, int button, Runnable callback) {
+    public static JoystickButton bindCallback(
+        int player,
+        int button,
+        Runnable callback,
+        Subsystem... requirements
+    ) {
         // bind to one time command i guess
-        return bindCommand(player, button, Commands.runOnce(callback));
+        return bindCommand(player, button, Commands.runOnce(callback, requirements));
     }
 
     /**
