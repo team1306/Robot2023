@@ -8,11 +8,7 @@
 
 package frc.robot;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.apriltag.AprilTagDetector;
@@ -20,8 +16,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.apriltag.AprilTagDetector.Config;
@@ -51,7 +45,6 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         // reset gyro
-        DriveTrain.gyro.reset();
 
         // create apriltag detector
         detector.addFamily("tag16h5");
@@ -99,15 +92,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        // Runs the Scheduler. This is responsible for polling buttons, adding
-        // newly-scheduled
-        // commands, running already- scheduled commands, removing finished or
-        // interrupted commands,
-        // and running subsystem periodic() methods. This must be called from the
-        // robot's periodic
-        // block in order for anything in the Command-based framework to work.
+        /// Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running already
+        // scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods. 
+        // This must be called from the robot's periodic block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        // use a max speed/rotation provided in shuffleboard
     }
 
     /**

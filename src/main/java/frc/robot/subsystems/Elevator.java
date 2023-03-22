@@ -54,6 +54,16 @@ public class Elevator extends SubsystemBase {
         controller.reset(elevatorMotor.getSelectedSensorPosition());
     }
 
+    public void automate() {
+        isClosedLoop = true;
+        controller.reset(elevatorMotor.getSelectedSensorPosition());
+    }
+
+    public void manualize() {
+        isClosedLoop = false;
+        controller.setGoal(new State());
+    }
+
     /**
      * return the position of the elevator
      * 

@@ -7,11 +7,8 @@
 
 package frc.robot;
 
-import java.util.ResourceBundle.Control;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.ArmCommand;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ElevatorCommand;
@@ -92,8 +89,6 @@ public class RobotContainer {
         elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
 
         // intake
-        // var intakeCommand = toggl
-
         // if we want independent toggle control: make toggleDeploy/toggleRun take a parameter true/false
         var depTrigger = Controller.asTrigger(togglePnum).debounce(0.05);
         // toggling toggles pneumatics,
@@ -102,7 +97,7 @@ public class RobotContainer {
 
         var runTrigger = Controller.asTrigger(toggleWheels).debounce(0.05);
         // toggling intake runner
-        runTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleRun(), intake));
+        runTrigger.toggleOnTrue(Commands.runOnce(() -> intake.toggleRun(), intake));
         runTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleRun(), intake));
 
         // grabber

@@ -45,6 +45,8 @@ public class BalanceCommand extends CommandBase {
     @Override
     public void initialize() {
         pid.reset();
+        pid.setPID(KP, KI, KD);
+        // pid.enableContinuousInput(0,1);
     }
 
     @Override
@@ -55,5 +57,16 @@ public class BalanceCommand extends CommandBase {
         var out = MathUtil.clamp(pid.calculate(curAng), -MaxOutput, MaxOutput);
         SmartDashboard.putNumber("balance pid out", out);
         driveTrain.arcadeDrive(out, 0);
+    }
+
+    //maybe?
+    @Override
+    public boolean isFinished() {
+        return pid.atSetpoint();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        driveTrain.arcadeDrive(0,0);
     }
 }

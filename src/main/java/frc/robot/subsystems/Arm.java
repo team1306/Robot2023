@@ -60,7 +60,6 @@ public class Arm extends SubsystemBase {
     public Arm() {
         // start by reseting in our base state
         resetEncoder();
-        enable();
     }
 
     // TODO make manual control method
@@ -71,13 +70,13 @@ public class Arm extends SubsystemBase {
         armEncoder.setPosition(0);
     }
 
-    // name carried over from mentioned repo; possibly something that describes it better
-    public void enable() {
+    
+    public void automate() {
         isClosedLoop = true;
         controller.reset(armEncoder.getPosition());
     }
 
-    public void disable() {
+    public void manualize() {
         isClosedLoop = false;
         controller.setGoal(new State());
     }

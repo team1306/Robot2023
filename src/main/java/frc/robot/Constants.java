@@ -45,9 +45,8 @@ public interface Constants {
 
     // ================== Solenoid Channels =====================
     // TODO determine proper values
-    int GRABBER_1 = 1;
-    int GRABBER_2 = 2;
-    int INTAKE = 3;
+    int GRABBER = 1;
+    int INTAKE = 2;
     // ================== Miscellaneous values ==================
     // double TRACK_WIDTH_METERS = .60;
     // double MAX_SPEED_MPS = 4.67;
