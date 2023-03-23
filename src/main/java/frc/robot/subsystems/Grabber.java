@@ -20,6 +20,6 @@ public class Grabber extends SubsystemBase {
      * toggle the states of the pistons, extends if contracted and contract if extended
      */
     public void toggle() {
-        solenoid.toggle();
+        solenoid.toggle(); 
     }
 }
