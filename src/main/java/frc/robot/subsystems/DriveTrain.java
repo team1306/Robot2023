@@ -24,6 +24,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     // configuration input
     public static UserAnalog maxSpeed, maxRotation;
 
+
     // https://www.baeldung.com/java-static-instance-initializer-blocks
     static {
         double defaultSpd = 0.5, defaultRot = 0.5;
@@ -45,6 +46,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
 
     private CANSparkMax rightLeader;
     private CANSparkMax rightFollower;
+    private boolean turbo;
 
     private RelativeEncoder lEncoder, rEncoder;
 
@@ -93,6 +95,18 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
 
         SmartDashboard.putNumber("x", odo.getPoseMeters().getX());
         SmartDashboard.putNumber("y", odo.getPoseMeters().getY());
+    }
+
+    public void turbo() {
+        turbo = true;
+    }
+
+    public void unTurbo() {
+        turbo = false;
+    }
+
+    public boolean isTurbo() {
+        return turbo;
     }
 
     /**

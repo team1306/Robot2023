@@ -50,6 +50,7 @@ public class RobotContainer {
     private UserAnalog forwardTurbo;
     private UserAnalog rotationDriveTrain;
 
+    private UserDigital turbo;
     // inputs for arm
     private UserAnalog elevatorInput, armInput;
 
@@ -85,6 +86,11 @@ public class RobotContainer {
             rotationDriveTrain
         );
         driveTrain.setDefaultCommand(driveCommand);
+
+        // turbo button
+        Controller.asTrigger(turbo)
+            .debounce(0.05)
+            .toggleOnTrue(Commands.startEnd(driveTrain::turbo, driveTrain::unTurbo, driveTrain));
 
         // elevator
         // elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
@@ -147,7 +153,9 @@ public class RobotContainer {
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
 
+        turbo = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_X);
         // intake inputs TODO work in progress, gotta find actual ones with Chris
+
         // togglePnum = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_Y);
         // toggleWheels = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_A);
 
