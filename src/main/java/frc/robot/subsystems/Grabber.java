@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -10,16 +12,24 @@ import frc.robot.Constants;
  */
 public class Grabber extends SubsystemBase {
     // solenoids controlling the pneumatic cylinders
-    private Solenoid solenoid;
+    private DoubleSolenoid dsol;
 
     public Grabber() {
-        solenoid = new Solenoid(PneumaticsModuleType.REVPH, Constants.GRABBER);
+        dsol = new DoubleSolenoid(
+            PneumaticsModuleType.CTREPCM,
+            Constants.GRABBER_EXTEND,
+            Constants.GRABBER_RETRACT
+        );
     }
 
     /**
      * toggle the states of the pistons, extends if contracted and contract if extended
      */
-    public void toggle() {
-        solenoid.toggle(); 
+    public void set(boolean value) {
+        dsol.set(value ? Value.kForward : Value.kReverse);
+    }
+
+    public void shutOff() {
+        dsol.set(Value.kOff);
     }
 }

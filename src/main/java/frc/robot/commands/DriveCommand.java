@@ -47,9 +47,7 @@ public class DriveCommand extends CommandBase {
         double rotation = MathUtil.applyDeadband(joystickRotation.get(), 0.05);
 
         // maxspeed and maxrotation checks moved into Drivetrain class
-        driveTrain.arcadeDrive(
-            spd,
-            rotation
-        );
+        driveTrain
+            .arcadeDrive(spd * DriveTrain.maxSpeed.get(), rotation * DriveTrain.maxRotation.get());
     }
 }

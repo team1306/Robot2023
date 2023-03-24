@@ -22,11 +22,11 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     public static final AHRS gyro = new AHRS();
 
     // configuration input
-    private static UserAnalog maxSpeed, maxRotation;
+    public static UserAnalog maxSpeed, maxRotation;
 
     // https://www.baeldung.com/java-static-instance-initializer-blocks
     static {
-        double defaultSpd = 0.3, defaultRot = 0.3;
+        double defaultSpd = 0.5, defaultRot = 0.5;
         // smartdashboard keys
         String spdKey = "Max Speed", rotKey = "Max Rotation";
         // creates boxes in shuffleboard
@@ -103,8 +103,8 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
      */
     public void arcadeDrive(double speed, double rotation) {
         // clamp inputs for no funny business
-        speed = MathUtil.clamp(speed * maxSpeed.get(), -1, 1);
-        rotation = MathUtil.clamp(rotation * maxRotation.get(), -1, 1);
+        speed = MathUtil.clamp(speed, -1, 1);
+        rotation = MathUtil.clamp(rotation, -1, 1);
 
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
         double leftMotorOutput, rightMotorOutput;
