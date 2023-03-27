@@ -8,11 +8,7 @@
 
 package frc.robot;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+
 import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.first.apriltag.AprilTagDetector;
@@ -20,8 +16,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.apriltag.AprilTagDetector.Config;
@@ -37,10 +31,10 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
 
     // messing around w/ apriltag detector & video stuff
-    private AprilTagDetector detector = new AprilTagDetector();
+    // private AprilTagDetector detector = new AprilTagDetector();
 
-    private CvSource out;
-    private VisionThread aprilThread;
+    // private CvSource out;
+    // private VisionThread aprilThread;
 
     /**
      * This function is run when the robot is first started up and should be used for any initialization code.
@@ -51,42 +45,41 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         // reset gyro
-        DriveTrain.gyro.reset();
 
         // create apriltag detector
-        detector.addFamily("tag16h5");
-        var config = new Config();
-        config.numThreads = 4;
-        config.quadDecimate = 1;
-        config.quadSigma = 0;
-        config.refineEdges = true;
-        detector.setConfig(config);
+        // detector.addFamily("tag16h5");
+        // var config = new Config();
+        // config.numThreads = 4;
+        // config.quadDecimate = 1;
+        // config.quadSigma = 0;
+        // config.refineEdges = true;
+        // detector.setConfig(config);
 
         // get camera input
         var cam = CameraServer.startAutomaticCapture();
-        cam.setResolution(640, 480);
+        // cam.setResolution(640, 480);
 
-        // output video stream, one for color & markings, one for black & white
-        out = CameraServer.putVideo("out", 480, 270);
+        // // output video stream, one for color & markings, one for black & white
+        // out = CameraServer.putVideo("out", 480, 270);
 
-        // seperate thread for apriltag detection
-        aprilThread = new VisionThread(cam, mat -> {
-            // create matrix for modifications, and copy input from camera
-            Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
-            // detect tags
-            var dets = detector.detect(mat);
-            for (var det : dets) {
-                // only valid tags from 1 to 8
-                if (det.getId() > 8 || det.getId() < 1)
-                    continue;
-                // run pose estimator
-                // ...
-            }
-            // output frame to camera server in shuffleboard
-            out.putFrame(mat);
-        }, a -> {});
-        aprilThread.setDaemon(true);
-        aprilThread.start();
+        // // seperate thread for apriltag detection
+        // aprilThread = new VisionThread(cam, mat -> {
+        // // create matrix for modifications, and copy input from camera
+        // Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
+        // // detect tags
+        // var dets = detector.detect(mat);
+        // for (var det : dets) {
+        // // only valid tags from 1 to 8
+        // if (det.getId() > 8 || det.getId() < 1)
+        // continue;
+        // // run pose estimator
+        // // ...
+        // }
+        // // output frame to camera server in shuffleboard
+        // out.putFrame(mat);
+        // }, a -> {});
+        // aprilThread.setDaemon(true);
+        // aprilThread.start();
     }
 
     /**
@@ -99,15 +92,12 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-        // Runs the Scheduler. This is responsible for polling buttons, adding
-        // newly-scheduled
-        // commands, running already- scheduled commands, removing finished or
-        // interrupted commands,
-        // and running subsystem periodic() methods. This must be called from the
-        // robot's periodic
-        // block in order for anything in the Command-based framework to work.
+        /// Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands, running
+        /// already
+        // scheduled commands, removing finished or interrupted commands, and running subsystem periodic() methods.
+        // This must be called from the robot's periodic block in order for anything in the Command-based framework to
+        /// work.
         CommandScheduler.getInstance().run();
-        // use a max speed/rotation provided in shuffleboard
     }
 
     /**
@@ -124,7 +114,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        // m_robotContainer.startAuto();
+        m_robotContainer.startAuto();
     }
 
     /**

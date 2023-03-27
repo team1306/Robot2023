@@ -13,7 +13,7 @@ public class BalanceCommand extends CommandBase {
 
     // out = KP * error + KI * accumErr + KD * deltaErr
     // note that error is in degrees (probably ~[-15,15]), and output is gonna be in[-1,1] so make constants quite small
-    private static double KP = 0.03;
+    private static double KP = 0.05;
     private static double KI = 0;
     private static double KD = 0.003;
 
@@ -45,15 +45,28 @@ public class BalanceCommand extends CommandBase {
     @Override
     public void initialize() {
         pid.reset();
+        pid.setPID(KP, KI, KD);
+        // pid.enableContinuousInput(0,1);
     }
 
     @Override
     public void execute() {
         // get current angle, and give that to the controller as feedback
-        double curAng = DriveTrain.gyro.getRoll();
+        double curAng = -DriveTrain.gyro.getRoll();
         // calcuate output, and clamp to a reasonble angle
         var out = MathUtil.clamp(pid.calculate(curAng), -MaxOutput, MaxOutput);
         SmartDashboard.putNumber("balance pid out", out);
         driveTrain.arcadeDrive(out, 0);
+    }
+
+    // maybe?
+    @Override
+    public boolean isFinished() {
+        return pid.atSetpoint();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        driveTrain.arcadeDrive(0, 0);
     }
 }

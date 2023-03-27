@@ -29,6 +29,7 @@ public class Controller {
     public static final int BUTTON_A = 1;
     public static final int BUTTON_B = 2;
 
+    // joystick ports
     public static final int PRIMARY = 0;
     public static final int SECONDARY = 1;
 

@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.utils.UserAnalog;
+import frc.robot.utils.UserDigital;
 import frc.robot.subsystems.DriveTrain;
 
 /**
@@ -46,10 +47,9 @@ public class DriveCommand extends CommandBase {
         double spd = MathUtil.applyDeadband(forwardTurbo.get() - backwardsTurbo.get(), 0.05);
         double rotation = MathUtil.applyDeadband(joystickRotation.get(), 0.05);
 
+        double maxSpeed = driveTrain.isTurbo() ? 1 : DriveTrain.maxSpeed.get();
+        double maxRotation = driveTrain.isTurbo() ? 1 : DriveTrain.maxRotation.get();
         // maxspeed and maxrotation checks moved into Drivetrain class
-        driveTrain.arcadeDrive(
-            spd,
-            rotation
-        );
+        driveTrain.arcadeDrive(spd * maxSpeed, rotation * maxRotation);
     }
 }

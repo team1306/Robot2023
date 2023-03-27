@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 import frc.robot.utils.UserAnalog;
@@ -21,7 +22,7 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void execute() {
-        arm.runArm(armInput.get());
+        arm.runArm(MathUtil.applyDeadband(armInput.get(), 0.05));
     }
 
 }

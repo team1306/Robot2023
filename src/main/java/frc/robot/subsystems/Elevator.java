@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.MathUtil;
@@ -8,6 +9,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.MotorUtils;
@@ -49,9 +52,21 @@ public class Elevator extends SubsystemBase {
     private boolean isClosedLoop;
 
     public Elevator() {
+        elevatorMotor
+            .configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 40, 1.5));
         // reset encoder and controller
         elevatorMotor.setSelectedSensorPosition(0);
         controller.reset(elevatorMotor.getSelectedSensorPosition());
+    }
+
+    public void automate() {
+        isClosedLoop = true;
+        controller.reset(elevatorMotor.getSelectedSensorPosition());
+    }
+
+    public void manualize() {
+        isClosedLoop = false;
+        controller.setGoal(new State());
     }
 
     /**
@@ -60,7 +75,7 @@ public class Elevator extends SubsystemBase {
      * @return the sensor position (or some modification of it)
      */
     private double getPosition() {
-        return elevatorMotor.getSelectedSensorPosition();
+        return elevatorMotor.getSelectedSensorPosition() / 4096 * Math.PI * Units.inchesToMeters(6);
     }
 
     /**
@@ -85,6 +100,8 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("falcon position", getPosition());
+        SmartDashboard.putNumber("falcon current", elevatorMotor.getSupplyCurrent());
         if (isClosedLoop) {
             // if there isn't a goal for some reason, then set it to the default position
             if (goal == null) {

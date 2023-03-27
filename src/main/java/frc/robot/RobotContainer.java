@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import java.util.ResourceBundle.Control;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.ArmCommand;
@@ -52,6 +50,7 @@ public class RobotContainer {
     private UserAnalog forwardTurbo;
     private UserAnalog rotationDriveTrain;
 
+    private UserDigital turbo;
     // inputs for arm
     private UserAnalog elevatorInput, armInput;
 
@@ -73,10 +72,10 @@ public class RobotContainer {
         configureButtonBindings();
         // create subsytems
         driveTrain = new DriveTrain();
-        arm = new Arm();
-        elevator = new Elevator();
-        intake = new Intake();
-        grabber = new Grabber();
+        // arm = new Arm();
+        // elevator = new Elevator();
+        // intake = new Intake();
+        // grabber = new Grabber();
 
         // create commands
         // drive command
@@ -88,24 +87,36 @@ public class RobotContainer {
         );
         driveTrain.setDefaultCommand(driveCommand);
 
+        // turbo button
+        Controller.asTrigger(turbo)
+            .debounce(0.05)
+            .toggleOnTrue(Commands.startEnd(driveTrain::turbo, driveTrain::unTurbo, driveTrain));
+
         // elevator
-        elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
+        // elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
 
         // intake
-        // var intakeCommand = toggl
-
         // if we want independent toggle control: make toggleDeploy/toggleRun take a parameter true/false
-        var depTrigger = Controller.asTrigger(togglePnum).debounce(0.05);
-        // toggling toggles pneumatics,
-        depTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleDeploy(), intake));
-        depTrigger.toggleOnTrue(Commands.runOnce(() -> intake.toggleDeploy(), intake));
+        // var depTrigger = Controller.asTrigger(togglePnum).debounce(0.05);
+        // // toggling toggles pneumatics,
+        // depTrigger.toggleOnTrue(
+        // Commands.startEnd(() -> intake.setPnum(true), () -> intake.setPnum(false), intake)
+        // );
 
-        var runTrigger = Controller.asTrigger(toggleWheels).debounce(0.05);
-        // toggling intake runner
-        runTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleRun(), intake));
-        runTrigger.toggleOnFalse(Commands.runOnce(() -> intake.toggleRun(), intake));
+        // arm
+        // var armcom = new ArmCommand(arm, armInput);
+        // var runTrigger = Controller.asTrigger(toggleWheels).debounce(0.05);
+        // // toggling intake runner
+        // runTrigger.toggleOnTrue(
+        // Commands.startEnd(() -> intake.setRun(true), () -> intake.setRun(false), intake)
+        // );
 
         // grabber
+        // var grabberToggle = Controller.asTrigger(toggleGrabber).debounce(0.05);
+        // // toggling intake runner
+        // grabberToggle.toggleOnTrue(
+        // Commands.startEnd(() -> grabber.set(true), () -> grabber.set(false), grabber)
+        // );
 
         // autobalance command
         // hold B button to autobalance (attempt to get to level state -- start on balance beam)
@@ -142,18 +153,20 @@ public class RobotContainer {
         forwardTurbo = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
 
+        turbo = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_X);
         // intake inputs TODO work in progress, gotta find actual ones with Chris
-        togglePnum = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_LBUMPER);
-        toggleWheels = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_RBUMPER);
+
+        // togglePnum = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_Y);
+        // toggleWheels = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_A);
 
         // elevator input
-        elevatorInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_RY);
+        // elevatorInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_RY);
 
         // arm input
-        armInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_LY);
+        // armInput = Controller.simpleAxis(Controller.SECONDARY, Controller.AXIS_LY);
 
         // grabber input
-        toggleGrabber = Controller.simpleButton(Controller.SECONDARY, Controller.BUTTON_B);
+        // toggleGrabber = Controller.simpleButton(Controller.SECONDARY, Controller.BUTTON_B);
     }
 
     /**
@@ -183,6 +196,21 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // TODO implement proper command sequence
         // placeholder example: just drive forwards for 3 seconds
-        return Commands.run(() -> driveTrain.arcadeDrive(1, 0)).withTimeout(3);
+        return Commands.sequence(
+            // //
+            // // extend elev
+            // Commands.run(() -> elevator.runElevator(1), elevator).withTimeout(3),
+            // // drop?? (seems unsafe due to arm unknowns)
+            // // retract elev
+            // Commands.run(() -> elevator.runElevator(-1), elevator).withTimeout(3),
+            // move backwards
+            Commands
+                .startEnd(
+                    () -> driveTrain.arcadeDrive(-0.5, 0),
+                    () -> driveTrain.arcadeDrive(0, 0),
+                    driveTrain
+                )
+                .withTimeout(3)
+        );
     }
 }

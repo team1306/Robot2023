@@ -44,10 +44,11 @@ public interface Constants {
     int TALON_CENTER_ARM = 10;
 
     // ================== Solenoid Channels =====================
-    // TODO determine proper values
-    int GRABBER_1 = 1;
-    int GRABBER_2 = 2;
-    int INTAKE = 3;
+    int GRABBER_EXTEND = 1;
+    int GRABBER_RETRACT = 2;
+
+    // int INTAKE_EXTEND = 12;
+    // int INTAKE_RETRACT = 11;
     // ================== Miscellaneous values ==================
     // double TRACK_WIDTH_METERS = .60;
     // double MAX_SPEED_MPS = 4.67;
