@@ -44,8 +44,8 @@ public interface Constants {
     int TALON_CENTER_ARM = 10;
 
     // ================== Solenoid Channels =====================
-    int GRABBER_EXTEND = 1;
-    int GRABBER_RETRACT = 2;
+    // int GRABBER_EXTEND = 1;
+    // int GRABBER_RETRACT = 2;
 
     // int INTAKE_EXTEND = 12;
     // int INTAKE_RETRACT = 11;

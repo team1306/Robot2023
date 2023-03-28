@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.List;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +21,19 @@ public class BalanceCommand extends CommandBase {
 
     private final double MaxOutput = 0.5;
     // TODO remove when constants are tuned
+    static {
+        SmartDashboard.putNumber("Balance kP", KP);
+        SmartDashboard.putNumber("Balance kI", KI);
+        SmartDashboard.putNumber("Balance kD", KD);
+    }
+
+    private static void updateConsts() {
+        // for live testing sake
+        // TODO remove below when constants are tuned
+        KP = SmartDashboard.getNumber("Balance kP", KP);
+        KI = SmartDashboard.getNumber("Balance kI", KI);
+        KD = SmartDashboard.getNumber("Balance kD", KD);
+    }
 
 
     private DriveTrain driveTrain;
@@ -27,12 +42,8 @@ public class BalanceCommand extends CommandBase {
 
     public BalanceCommand(double idealAngle, DriveTrain driveTrain) {
         this.driveTrain = driveTrain;
-        // for live testing sake
-        // TODO remove below when constants are tuned
-        // KP = SmartDashboard.getNumber("Balance kP", KP);
-        // KI = SmartDashboard.getNumber("Balance kI", KI);
-        // KD = SmartDashboard.getNumber("Balance kD", KD);
-        // remove above when constants are tuned
+        // todo remove below when tuned
+        updateConsts();
         pid = new PIDController(KP, KI, KD);
         pid.setSetpoint(idealAngle);
         addRequirements(driveTrain);
@@ -41,14 +52,17 @@ public class BalanceCommand extends CommandBase {
     @Override
     public void initialize() {
         pid.reset();
-        // pid.setPID(KP, KI, KD);
-        // pid.enableContinuousInput(0,1);
+        // todo remove below when tuned
+        updateConsts();
+        pid.setPID(KP, KI, KD);
+        System.out.println(List.of(KP, KI, KD));
+        pid.enableContinuousInput(-1, 1);
     }
 
     @Override
     public void execute() {
         // get current angle, and give that to the controller as feedback
-        double currentAngle = 0;// -DriveTrain.gyro.getRoll();
+        double currentAngle = -DriveTrain.gyro.getRoll();
         // calcuate output, and clamp to a reasonble angle
         var out = MathUtil.clamp(pid.calculate(currentAngle), -MaxOutput, MaxOutput);
         SmartDashboard.putNumber("balance pid out", out);

@@ -4,8 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -22,7 +20,6 @@ public class Intake extends SubsystemBase {
     private final double speed = 0.6;
 
     public Intake() {
-        // TODO replace with correct CAN IDs
         left = MotorUtils.initWPITalonSRX(Constants.TALON_FAR_LEFT);
         right = MotorUtils.initWPITalonSRX(Constants.TALON_FAR_RIGHT);
         // probably should be inverted to produce net inward force

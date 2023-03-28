@@ -19,28 +19,12 @@ import frc.robot.utils.UserAnalog;
  * Used by DriveTrain command to move robot Calculates output for each side of the drivetrain
  */
 public class DriveTrain extends SubsystemBase implements AutoCloseable {
-    // public static final AHRS gyro = new AHRS();
+    public static final AHRS gyro = new AHRS();
 
     // configuration input
-    public static UserAnalog maxSpeed = () -> 0.3, maxRotation = () -> 0.3;
-
-
-    // https://www.baeldung.com/java-static-instance-initializer-blocks
-    // static {
-    // // default speed; only used during balancing (non-turbo)
-    // double defaultSpd = 0.3, defaultRot = 0.3;
-    // // smartdashboard keys
-    // String spdKey = "Max Speed", rotKey = "Max Rotation";
-    // // creates boxes in shuffleboard
-    // SmartDashboard.putNumber(spdKey, defaultSpd);
-    // SmartDashboard.putNumber(rotKey, defaultRot);
-    // // create listeners
-    // maxSpeed = () -> SmartDashboard.getNumber(spdKey, defaultSpd);
-    // maxRotation = () -> SmartDashboard.getNumber(rotKey, defaultRot);
-    // }
 
     // track width of 24 inches
-    // private DifferentialDriveOdometry odo;
+    private DifferentialDriveOdometry odo;
 
     private CANSparkMax leftLeader;
     private CANSparkMax leftFollower;
@@ -57,7 +41,7 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
     public DriveTrain() {
         // gyro.calibrate();
         // System.out.println("calibrated");
-        // gyro.reset();
+        gyro.reset();
 
         leftLeader = initSparkMax(SPARK_FAR_LEFT);
         leftFollower = initSparkMax(SPARK_NEAR_LEFT);
@@ -76,12 +60,12 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         rEncoder.setPosition(0);
 
         // odometry for measurement (potentially for autonomous)
-        // odo = new DifferentialDriveOdometry(
-        // gyro.getRotation2d(),
-        // // 6 inch diameter wheels
-        // lEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI,
-        // rEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI
-        // );
+        odo = new DifferentialDriveOdometry(
+            gyro.getRotation2d(),
+            // 6 inch diameter wheels
+            lEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI,
+            rEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI
+        );
 
         // have the followers follow the leaders (they will output the same values)
         leftFollower.follow(leftLeader);
@@ -91,15 +75,15 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
 
     @Override
     public void periodic() {
-        // var angle = gyro.getRotation2d();
-        // odo.update(
-        // angle,
-        // lEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI,
-        // rEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI
-        // );
+        var angle = gyro.getRotation2d();
+        odo.update(
+            angle,
+            lEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI,
+            rEncoder.getPosition() * Units.inchesToMeters(6) * Math.PI
+        );
 
-        // SmartDashboard.putNumber("x", odo.getPoseMeters().getX());
-        // SmartDashboard.putNumber("y", odo.getPoseMeters().getY());
+        SmartDashboard.putNumber("x", odo.getPoseMeters().getX());
+        SmartDashboard.putNumber("y", odo.getPoseMeters().getY());
         // SmartDashboard.putBoolean("isTurbo", turbo);
         // SmartDashboard.putNumber("roll", gyro.getRoll());
     }
@@ -163,6 +147,13 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
             leftLeader.set(left.get());
             rightLeader.set(right.get());
         });
+    }
+
+    public Command driveMeters(double meters, double output) {
+        var pos = odo.getPoseMeters().getTranslation();
+        // go in desired direction at desired output until the distance moved is sufficient
+        return startEnd(() -> arcadeDrive(Math.signum(meters) * output, 0), () -> arcadeDrive(0, 0))
+            .until(() -> odo.getPoseMeters().getTranslation().getDistance(pos) >= meters);
     }
 
     @Override

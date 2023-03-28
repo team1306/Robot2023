@@ -9,16 +9,9 @@
 package frc.robot;
 
 
-import org.opencv.imgproc.Imgproc;
-
-import edu.wpi.first.apriltag.AprilTagDetector;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.CvSource;
-import edu.wpi.first.vision.VisionThread;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.DriveTrain;
-import edu.wpi.first.apriltag.AprilTagDetector.Config;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -27,7 +20,9 @@ import edu.wpi.first.apriltag.AprilTagDetector.Config;
  */
 public class Robot extends TimedRobot {
 
-    public static DriveTrain driveTrain;
+    private static boolean RUN_AUTO = true;
+
+    private Command autoCommand;
     private RobotContainer m_robotContainer;
 
     // messing around w/ apriltag detector & video stuff
@@ -43,43 +38,6 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // create robot container
         m_robotContainer = new RobotContainer();
-
-        // reset gyro
-
-        // create apriltag detector
-        // detector.addFamily("tag16h5");
-        // var config = new Config();
-        // config.numThreads = 4;
-        // config.quadDecimate = 1;
-        // config.quadSigma = 0;
-        // config.refineEdges = true;
-        // detector.setConfig(config);
-
-        // get camera input
-        // var cam = CameraServer.startAutomaticCapture();
-        // cam.setResolution(640, 480);
-
-        // // output video stream, one for color & markings, one for black & white
-        // out = CameraServer.putVideo("out", 480, 270);
-
-        // // seperate thread for apriltag detection
-        // aprilThread = new VisionThread(cam, mat -> {
-        // // create matrix for modifications, and copy input from camera
-        // Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
-        // // detect tags
-        // var dets = detector.detect(mat);
-        // for (var det : dets) {
-        // // only valid tags from 1 to 8
-        // if (det.getId() > 8 || det.getId() < 1)
-        // continue;
-        // // run pose estimator
-        // // ...
-        // }
-        // // output frame to camera server in shuffleboard
-        // out.putFrame(mat);
-        // }, a -> {});
-        // aprilThread.setDaemon(true);
-        // aprilThread.start();
     }
 
     /**
@@ -114,7 +72,11 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_robotContainer.startAuto();
+        autoCommand = m_robotContainer.getAutonomousCommand();
+        if (RUN_AUTO && autoCommand != null) {
+            // driveCommand.cancel();
+            autoCommand.schedule();
+        }
     }
 
     /**
@@ -127,16 +89,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        m_robotContainer.startTeleop();
+        if (RUN_AUTO && autoCommand != null) {
+            autoCommand.cancel();
+        }
     }
 
     /**
      * This function is called periodically during operator control.
      */
     @Override
-    public void teleopPeriodic() {
-
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void testInit() {
