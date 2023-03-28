@@ -1,14 +1,15 @@
 package frc.robot.utils;
 
+import java.util.NoSuchElementException;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * contains controller mappings and related methods
+ * contains controller mappings and related methods. Alternatively {@link edu.wpi.first.wpilibj.XboxController} will
+ * probably provide an equal or better way to get inputs, since the used {@link edu.wpi.first.wpilibj.Joystick}s are
+ * meant for different denices
  */
 public class Controller {
     // Controller Map:
@@ -45,6 +46,21 @@ public class Controller {
     }
 
     /**
+     * helper method to get the corresponding joystick for a given player
+     * 
+     * @param player player ID (USB port in driver station)
+     * @return corresponding joystick
+     */
+    private static Joystick fromPlayer(int player) {
+        // https://docs.oracle.com/en/java/javase/19/language/switch-expressions.html
+        return switch (player) {
+            case PRIMARY -> primaryJoystick;
+            case SECONDARY -> secondaryJoystick;
+            default -> throw new NoSuchElementException("Invalid Player Controller requested");
+        };
+    }
+
+    /**
      * Constructs a UserAnalog that precisely mirrors the axis, with no tranformation.
      * 
      * @param player - one of either PRIMARY or SECONDARY. This value is validated, and an invalid parameter will return
@@ -54,23 +70,8 @@ public class Controller {
      * @return the UserAnalog instance
      */
     public static UserAnalog simpleAxis(int player, int axis) {
-        Joystick joystick;
-        if (player == PRIMARY) {
-            joystick = primaryJoystick;
-        } else if (player == SECONDARY) {
-            joystick = secondaryJoystick;
-        } else {
-            System.err.println("ERROR: Invalid Player Controller requested");
-            return () -> 0;
-        }
-        return () -> {
-            // deadbanding
-            double raw = joystick.getRawAxis(axis);
-            double sign = Math.signum(raw);
-            final double deadband = 0.1;
-            final double multiplier = 1 / (1 - deadband);
-            return sign * Math.max(0, Math.abs(raw) - deadband) * multiplier;
-        };
+        Joystick joystick = fromPlayer(player);
+        return () -> MathUtil.applyDeadband(joystick.getRawAxis(axis), 0.1);
     }
 
     /**
@@ -83,49 +84,8 @@ public class Controller {
      * @return the UserDigital instance
      */
     public static UserDigital simpleButton(int player, int button) {
-        Joystick joystick;
-        if (player == PRIMARY) {
-            joystick = primaryJoystick;
-        } else if (player == SECONDARY) {
-            joystick = secondaryJoystick;
-        } else {
-            System.err.println("ERROR: Invalid Player Controller requested");
-            return () -> false;
-        }
+        Joystick joystick = fromPlayer(player);
         return () -> joystick.getRawButton(button);
-    }
-
-    /**
-     * binds command to given button and retunr it
-     * 
-     * @param player player id
-     * @param button button id
-     * @param cmd    command to bind to said button
-     * @return the bound button in case other operations need to be done and to protect against trash collection
-     */
-    public static JoystickButton bindCommand(int player, int button, Command cmd) {
-        JoystickButton b = getJoystickButton(player, button);
-        b.whileTrue(cmd);
-        // b.whi
-        return b;
-    }
-
-    /**
-     * binds callback to given button and retunr it
-     * 
-     * @param player   player id
-     * @param button   button id
-     * @param callback callback to bind to specified button
-     * @return the bound button in case other operations need to be done and to protect against trash collection
-     */
-    public static JoystickButton bindCallback(
-        int player,
-        int button,
-        Runnable callback,
-        Subsystem... requirements
-    ) {
-        // bind to one time command i guess
-        return bindCommand(player, button, Commands.runOnce(callback, requirements));
     }
 
     /**
@@ -136,27 +96,7 @@ public class Controller {
      * @return the corresponding joystick button
      */
     public static JoystickButton getJoystickButton(int player, int button) {
-        Joystick joystick;
-        if (player == PRIMARY) {
-            joystick = primaryJoystick;
-        } else if (player == SECONDARY) {
-            joystick = secondaryJoystick;
-        } else {
-            System.err.println("ERROR: Invalid Player Controller requested");
-            joystick = secondaryJoystick;
-        }
+        Joystick joystick = fromPlayer(player);
         return new JoystickButton(joystick, button);
     }
-
-    /**
-     * creates trigger from given UserDigital. Triggers have some useful properties like included toggling behavior,
-     * debounces, and etc.
-     * 
-     * @param ud given userdigital
-     * @return resulting trigger value
-     */
-    public static Trigger asTrigger(UserDigital ud) {
-        return new Trigger(() -> ud.get());
-    }
 }
-

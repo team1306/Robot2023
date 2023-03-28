@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.utils.Controller;
 import frc.robot.utils.UserAnalog;
-import frc.robot.utils.UserDigital;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -40,7 +40,7 @@ public class RobotContainer {
     private UserAnalog rotationDriveTrain;
 
     // turbo toggle button
-    private UserDigital turbo;
+    private JoystickButton turbo;
 
 
     private SendableChooser<Command> autos = new SendableChooser<>();
@@ -66,7 +66,7 @@ public class RobotContainer {
         driveTrain.setDefaultCommand(driveCommand);
 
         // turbo button
-        Controller.asTrigger(turbo).debounce(0.05).toggleOnTrue(Commands.startEnd(() -> {
+        turbo.debounce(0.05).toggleOnTrue(Commands.startEnd(() -> {
             driveCommand.turbo = false;
             SmartDashboard.putBoolean("isTurbo", false);
         }, () -> {
@@ -75,7 +75,6 @@ public class RobotContainer {
         }));
 
         // auto choices
-
         var nothing = Commands.none();
         var forward = Commands
             .startEnd(
@@ -140,7 +139,7 @@ public class RobotContainer {
         forwards = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
 
-        turbo = Controller.simpleButton(Controller.PRIMARY, Controller.BUTTON_X);
+        turbo = Controller.getJoystickButton(Controller.PRIMARY, Controller.BUTTON_X);
     }
 
     public Command getAutonomousCommand() {
