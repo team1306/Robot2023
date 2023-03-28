@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
         // detector.setConfig(config);
 
         // get camera input
-        var cam = CameraServer.startAutomaticCapture();
+        // var cam = CameraServer.startAutomaticCapture();
         // cam.setResolution(640, 480);
 
         // // output video stream, one for color & markings, one for black & white

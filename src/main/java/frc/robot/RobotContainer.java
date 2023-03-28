@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.ArmCommand;
@@ -30,9 +32,9 @@ import frc.robot.utils.UserDigital;
 public class RobotContainer {
 
     // whether or not to run the autonomous command
-    private final boolean RUN_AUTO = false;
+    private boolean RUN_AUTO = true;
     // toggle for things only done during testing vs in competition
-    private final boolean DevMode = true;
+    private final boolean DevMode = false;
 
     // The robot's subsystems and commands are defined here...
     // Subsystems
@@ -43,7 +45,8 @@ public class RobotContainer {
     private Grabber grabber;
 
     // Commands
-    private Command autoCommand, driveCommand, elevatorCommand, intakeCommand;
+    private Command autoCommand, elevatorCommand, intakeCommand;
+    private DriveCommand driveCommand;
 
     // inputs for drive train
     private UserAnalog backwardsTurbo;
@@ -60,6 +63,9 @@ public class RobotContainer {
     // inputs for grabber
     private UserDigital toggleGrabber;
 
+
+    private SendableChooser<Command> autos = new SendableChooser<>();
+
     // The robot's inputs that it recieves from the controller are defined here
 
     /**
@@ -70,6 +76,8 @@ public class RobotContainer {
         Controller.init();
         // bind buttons
         configureButtonBindings();
+        // create auto bindings
+
         // create subsytems
         driveTrain = new DriveTrain();
         // arm = new Arm();
@@ -88,9 +96,13 @@ public class RobotContainer {
         driveTrain.setDefaultCommand(driveCommand);
 
         // turbo button
-        Controller.asTrigger(turbo)
-            .debounce(0.05)
-            .toggleOnTrue(Commands.startEnd(driveTrain::turbo, driveTrain::unTurbo, driveTrain));
+        Controller.asTrigger(turbo).debounce(0.05).toggleOnTrue(Commands.startEnd(() -> {
+            driveCommand.turbo = false;
+            SmartDashboard.putBoolean("isTurbo", false);
+        }, () -> {
+            driveCommand.turbo = true;
+            SmartDashboard.putBoolean("isTurbo", true);
+        }));
 
         // elevator
         // elevatorCommand = new ElevatorCommand(elevator, elevatorInput);
@@ -120,13 +132,13 @@ public class RobotContainer {
 
         // autobalance command
         // hold B button to autobalance (attempt to get to level state -- start on balance beam)
-        Controller.bindCommand(
-            Controller.PRIMARY,
-            Controller.BUTTON_B,
-            // since RIO lying face up, it should use the pitch value
-            // using current measurement as baseline (flat) value to compare to
-            new BalanceCommand(DriveTrain.gyro.getPitch(), driveTrain)
-        );
+        // Controller.bindCommand(
+        // Controller.PRIMARY,
+        // Controller.BUTTON_B,
+        // // since RIO lying face up, it should use the pitch value
+        // // using current measurement as baseline (flat) value to compare to
+        // new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain)
+        // );
 
         if (DevMode) {
             // testdrive command, don't use in competition
@@ -138,6 +150,39 @@ public class RobotContainer {
                 driveTrain.testDrive(backwardsTurbo, forwardTurbo)
             );
         }
+
+        // auto choices
+
+        var nothing = Commands.none();
+        var forward = Commands
+            .startEnd(
+                () -> driveTrain.arcadeDrive(0.5, 0),
+                () -> driveTrain.arcadeDrive(0, 0),
+                driveTrain
+            )
+            .withTimeout(2);
+        var backward = Commands
+            .startEnd(
+                () -> driveTrain.arcadeDrive(-0.5, 0),
+                () -> driveTrain.arcadeDrive(0, 0),
+                driveTrain
+            )
+            .withTimeout(2);
+        var balance = Commands
+            .startEnd(
+                () -> driveTrain.arcadeDrive(0.3, 0),
+                () -> driveTrain.arcadeDrive(0, 0),
+                driveTrain
+            )
+            .withTimeout(2)
+            .andThen(new BalanceCommand(0, driveTrain));
+
+        autos.setDefaultOption("do nothing", nothing);
+        autos.addOption("driveForward", forward);
+        autos.addOption("driveBackward", backward);
+        autos.addOption("forward balance", balance);
+
+        SmartDashboard.putData(autos);
 
 
     }
@@ -174,7 +219,7 @@ public class RobotContainer {
      */
     public void startAuto() {
         autoCommand = getAutonomousCommand();
-        if (RUN_AUTO) {
+        if (RUN_AUTO && autoCommand != null) {
             // driveCommand.cancel();
             autoCommand.schedule();
         }
@@ -187,30 +232,13 @@ public class RobotContainer {
     public void startTeleop() {
         // This makes sure that the autonomous stops running when teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove this or comment it out.
-        if (RUN_AUTO) {
+        if (RUN_AUTO && autoCommand != null) {
             autoCommand.cancel();
         }
 
     }
 
     public Command getAutonomousCommand() {
-        // TODO implement proper command sequence
-        // placeholder example: just drive forwards for 3 seconds
-        return Commands.sequence(
-            // //
-            // // extend elev
-            // Commands.run(() -> elevator.runElevator(1), elevator).withTimeout(3),
-            // // drop?? (seems unsafe due to arm unknowns)
-            // // retract elev
-            // Commands.run(() -> elevator.runElevator(-1), elevator).withTimeout(3),
-            // move backwards
-            Commands
-                .startEnd(
-                    () -> driveTrain.arcadeDrive(-0.5, 0),
-                    () -> driveTrain.arcadeDrive(0, 0),
-                    driveTrain
-                )
-                .withTimeout(3)
-        );
+        return autos.getSelected();
     }
 }

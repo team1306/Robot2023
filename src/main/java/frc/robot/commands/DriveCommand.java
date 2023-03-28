@@ -11,6 +11,7 @@ import frc.robot.subsystems.DriveTrain;
  */
 public class DriveCommand extends CommandBase {
 
+    public boolean turbo = true;
     private DriveTrain driveTrain;
     private UserAnalog backwardsTurbo;
     private UserAnalog forwardTurbo;
@@ -47,8 +48,8 @@ public class DriveCommand extends CommandBase {
         double spd = MathUtil.applyDeadband(forwardTurbo.get() - backwardsTurbo.get(), 0.05);
         double rotation = MathUtil.applyDeadband(joystickRotation.get(), 0.05);
 
-        double maxSpeed = driveTrain.isTurbo() ? 1 : DriveTrain.maxSpeed.get();
-        double maxRotation = driveTrain.isTurbo() ? 1 : DriveTrain.maxRotation.get();
+        double maxSpeed = turbo ? 1 : DriveTrain.maxSpeed.get();
+        double maxRotation = turbo ? 1 : DriveTrain.maxRotation.get();
         // maxspeed and maxrotation checks moved into Drivetrain class
         driveTrain.arcadeDrive(spd * maxSpeed, rotation * maxRotation);
     }
