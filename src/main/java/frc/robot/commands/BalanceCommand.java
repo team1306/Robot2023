@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.util.List;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,24 +13,27 @@ public class BalanceCommand extends CommandBase {
 
     // out = KP * error + KI * accumErr + KD * deltaErr
     // note that error is in degrees (probably ~[-15,15]), and output is gonna be in[-1,1] so make constants quite small
-    private static double KP = 0.0875;
-    private static double KI = 0;
-    private static double KD = 0.00008;
+    public static double KP = 0.00925;
+    public static double KI = 0;
+    public static double KD = 0.0005;
 
     private final double MaxOutput = 0.5;
     // TODO remove when constants are tuned
-    static {
+    // static {
+    // SmartDashboard.putNumber("Balance kP", KP);
+    // SmartDashboard.putNumber("Balance kI", KI);
+    // SmartDashboard.putNumber("Balance kD", KD);
+    // }
+
+    public static void updateConsts() {
+        // for live testing sake
+        // TODO remove below when constants are tuned
+        // KP = SmartDashboard.getNumber("Balance kP", KP);
+        // KI = SmartDashboard.getNumber("Balance kI", KI);
+        // KD = SmartDashboard.getNumber("Balance kD", KD);
         SmartDashboard.putNumber("Balance kP", KP);
         SmartDashboard.putNumber("Balance kI", KI);
         SmartDashboard.putNumber("Balance kD", KD);
-    }
-
-    private static void updateConsts() {
-        // for live testing sake
-        // TODO remove below when constants are tuned
-        KP = SmartDashboard.getNumber("Balance kP", KP);
-        KI = SmartDashboard.getNumber("Balance kI", KI);
-        KD = SmartDashboard.getNumber("Balance kD", KD);
     }
 
 
@@ -41,6 +42,7 @@ public class BalanceCommand extends CommandBase {
     private PIDController pid;
 
     public BalanceCommand(double idealAngle, DriveTrain driveTrain) {
+        SmartDashboard.putNumber("ideal", idealAngle);
         this.driveTrain = driveTrain;
         // todo remove below when tuned
         updateConsts();
@@ -55,8 +57,8 @@ public class BalanceCommand extends CommandBase {
         // todo remove below when tuned
         updateConsts();
         pid.setPID(KP, KI, KD);
-        System.out.println(List.of(KP, KI, KD));
-        pid.enableContinuousInput(-1, 1);
+        // System.out.println(List.of(KP, KI, KD));
+        // pid.enableContinuousInput(-1, 1);
     }
 
     @Override
