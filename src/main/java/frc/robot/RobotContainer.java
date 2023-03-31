@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.BalanceCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Intake;
 import frc.robot.utils.Controller;
 import frc.robot.utils.UserAnalog;
 
@@ -29,9 +31,9 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     // Subsystems
     private DriveTrain driveTrain;
+    private Intake intake;
 
     // Commands
-
     private DriveCommand driveCommand;
 
     // inputs for drive train
@@ -39,8 +41,8 @@ public class RobotContainer {
     private UserAnalog forwards;
     private UserAnalog rotationDriveTrain;
 
-    // turbo toggle button
-    private JoystickButton turbo;
+    // toggle buttons
+    private JoystickButton turbo, balance, intakeIn, intakeOut;
 
 
     private SendableChooser<Command> autos = new SendableChooser<>();
@@ -55,10 +57,10 @@ public class RobotContainer {
         Controller.init();
         // bind buttons
         configureButtonBindings();
-        // create auto bindings
 
         // create subsytems
         driveTrain = new DriveTrain();
+        intake = new Intake();
 
         // create commands
         // drive command
@@ -74,58 +76,50 @@ public class RobotContainer {
             SmartDashboard.putBoolean("isTurbo", true);
         }));
 
+        intakeIn.whileTrue(intake.runCmd(-1));
+        intakeOut.whileTrue(intake.runCmd(1));
+
+
+        balance.whileTrue(new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain));
+
         // auto choices
         var nothing = Commands.none();
-        var forward = Commands
-            .startEnd(
-                () -> driveTrain.arcadeDrive(0.5, 0),
-                () -> driveTrain.arcadeDrive(0, 0),
-                driveTrain
-            )
-            .withTimeout(2);
-        var backward = Commands
-            .startEnd(
-                () -> driveTrain.arcadeDrive(-0.5, 0),
-                () -> driveTrain.arcadeDrive(0, 0),
-                driveTrain
-            )
-            .withTimeout(2);
+        var forward = driveTrain.driveOutput(0.5, 0).withTimeout(2);
+        var backward = driveTrain.driveOutput(-0.5, 0).withTimeout(2);
         // forward then balance
-        var balance = Commands
-            .startEnd(
-                () -> driveTrain.arcadeDrive(0.3, 0),
-                () -> driveTrain.arcadeDrive(0, 0),
-                driveTrain
-            )
+        var balance = driveTrain.driveOutput(0.3, 0)
             .withTimeout(2)
-            .andThen(new BalanceCommand(0, driveTrain));
+            .andThen(new BalanceCommand(0, driveTrain).withTimeout(5));
 
         // forward, backward, balance
         var taxBalance = Commands.sequence(
-            Commands
-                .startEnd(
-                    () -> driveTrain.arcadeDrive(0.5, 0),
-                    () -> driveTrain.arcadeDrive(0, 0),
-                    driveTrain
-                )
-                .withTimeout(2),
-            Commands
-                .startEnd(
-                    () -> driveTrain.arcadeDrive(-0.3, 0),
-                    () -> driveTrain.arcadeDrive(0, 0),
-                    driveTrain
-                )
-                .withTimeout(0.75),
-            new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain)
+            driveTrain.driveOutput(0.5, 0).withTimeout(2),
+            driveTrain.driveOutput(-0.3, 0).withTimeout(0.75),
+            new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain).withTimeout(5)
         );
-
+        // score and back up
+        var scoreTax = Commands.sequence(
+            intake.runCmd(1).withTimeout(0.5),
+            driveTrain.driveOutput(-0.5, 0).withTimeout(2)
+        );
+        // score, backup to taxi, go forward on ramp, and balance
+        var scoreTaxBal = Commands.sequence(
+            intake.runCmd(1).withTimeout(0.5),
+            driveTrain.driveOutput(-0.35, 0).withTimeout(3),
+            new WaitCommand(1.5),
+            driveTrain.driveOutput(0.3, 0).withTimeout(1),
+            new BalanceCommand(0, driveTrain).withTimeout(5)
+        );
+        // Commands.startEnd(() -> driveTrian, null, null));
         autos.setDefaultOption("do nothing", nothing);
         autos.addOption("driveForward", forward);
         autos.addOption("driveBackward", backward);
         autos.addOption("forward no taxi balance", balance);
         autos.addOption("forwar taxi balance", taxBalance);
+        autos.addOption("score taxi", scoreTax);
+        autos.addOption("score taxi balance", scoreTaxBal);
 
-        SmartDashboard.putData(autos);
+        SmartDashboard.putData("Auto commands", autos);
     }
 
     /**
@@ -140,6 +134,11 @@ public class RobotContainer {
         rotationDriveTrain = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LX);
 
         turbo = Controller.getJoystickButton(Controller.PRIMARY, Controller.BUTTON_X);
+        balance = Controller.getJoystickButton(Controller.PRIMARY, Controller.BUTTON_B);
+
+        intakeIn = Controller.getJoystickButton(Controller.PRIMARY, Controller.BUTTON_A);
+        intakeOut = Controller.getJoystickButton(Controller.PRIMARY, Controller.BUTTON_Y);
+
     }
 
     public Command getAutonomousCommand() {

@@ -156,6 +156,10 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
             .until(() -> odo.getPoseMeters().getTranslation().getDistance(pos) >= meters);
     }
 
+    public Command driveOutput(double out, double spin) {
+        return startEnd(() -> arcadeDrive(out, spin), () -> arcadeDrive(0, 0));
+    }
+
     @Override
     public void close() throws Exception {
         leftLeader.close();
