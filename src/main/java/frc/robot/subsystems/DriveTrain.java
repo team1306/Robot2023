@@ -31,7 +31,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
 
     private CANSparkMax rightLeader;
     private CANSparkMax rightFollower;
-    private boolean turbo;
 
     private RelativeEncoder lEncoder, rEncoder;
 
@@ -39,8 +38,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
      * Initializing drive train and motor settings
      */
     public DriveTrain() {
-        // gyro.calibrate();
-        // System.out.println("calibrated");
         gyro.reset();
 
         leftLeader = initSparkMax(SPARK_FAR_LEFT);
@@ -86,18 +83,6 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
         SmartDashboard.putNumber("y", odo.getPoseMeters().getY());
         // SmartDashboard.putBoolean("isTurbo", turbo);
         // SmartDashboard.putNumber("roll", gyro.getRoll());
-    }
-
-    public void turbo() {
-        turbo = true;
-    }
-
-    public void unTurbo() {
-        turbo = false;
-    }
-
-    public boolean isTurbo() {
-        return turbo;
     }
 
     /**
@@ -156,6 +141,13 @@ public class DriveTrain extends SubsystemBase implements AutoCloseable {
             .until(() -> odo.getPoseMeters().getTranslation().getDistance(pos) >= meters);
     }
 
+    /**
+     * constructs a command to drive the drivetrain at a certain speed until cancelled
+     * 
+     * @param out  desired output/speed
+     * @param spin desired rotation/spin
+     * @return a StartEndCommand which drives at the desired parameters
+     */
     public Command driveOutput(double out, double spin) {
         return startEnd(() -> arcadeDrive(out, spin), () -> arcadeDrive(0, 0));
     }

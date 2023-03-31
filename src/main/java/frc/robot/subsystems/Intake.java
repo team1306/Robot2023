@@ -23,6 +23,11 @@ public class Intake extends SubsystemBase {
         right.setInverted(true);
     }
 
+    /**
+     * runs the motors in a given direction at a set speed
+     * 
+     * @param sign direction of rotation (-1 = in, 1 = out, 0 = off)
+     */
     public void set(int sign) {
         sign = Integer.signum(sign);
         left.set(ControlMode.PercentOutput, Integer.signum(sign) * speed);
@@ -30,6 +35,12 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake", sign);
     }
 
+    /**
+     * returns a command to run the motors on startup, and stop on finish
+     * 
+     * @param sign direction of rotation (-1 = in, 1 = out)
+     * @return a command which runs the intake
+     */
     public Command runCmd(int sign) {
         return startEnd(() -> set(sign), () -> set(0));
     }

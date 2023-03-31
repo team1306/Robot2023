@@ -9,7 +9,7 @@ import frc.robot.subsystems.DriveTrain;
  * Command to drive the robot based on controller input
  */
 public class DriveCommand extends CommandBase {
-
+    // turbo (no speed limit by default; good movement easily early in game)
     public boolean turbo = true;
     private DriveTrain driveTrain;
     private UserAnalog backwardsTurbo;
@@ -17,30 +17,29 @@ public class DriveCommand extends CommandBase {
     private UserAnalog joystickRotation;
 
     /**
-     * initalizes drive command from given drivetrain, speed, and rotation
+     * initlizes general driving command for the drivetrain object
      * 
-     * @param driveTrain    drivetrain to bind
-     * @param speed         initial speed
-     * @param leftRotation  initial left rotation
-     * @param rightRotation initial right rotation
+     * @param driveTrain drivetrain to bind
+     * @param backwards  backwards input, subtracted from forwards to get general movement input
+     * @param forwards   forwards input
+     * @param rotation   rotation input -- how fast to spin
      */
     public DriveCommand(
         DriveTrain driveTrain,
-        UserAnalog backwardsTurbo,
-        UserAnalog forwardTurbo,
-        UserAnalog joystickRotation
+        UserAnalog backwards,
+        UserAnalog forwards,
+        UserAnalog rotation
     ) {
         this.driveTrain = driveTrain;
-        this.backwardsTurbo = backwardsTurbo;
-        this.forwardTurbo = forwardTurbo;
-        this.joystickRotation = joystickRotation;
+        this.backwardsTurbo = backwards;
+        this.forwardTurbo = forwards;
+        this.joystickRotation = rotation;
         this.addRequirements(driveTrain);
     }
 
     /**
      * called repeatedly when command is schedules to run
      */
-
     @Override
     public void execute() {
         // apply deadband to both inputs

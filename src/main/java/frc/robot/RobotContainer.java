@@ -53,16 +53,17 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices.
      */
     public RobotContainer() {
-        // initalize controller (sets correct usb ports)
-        Controller.init();
-        // bind buttons
+        // bind buttons and initalize controller ports
         configureButtonBindings();
 
         // create subsytems
         driveTrain = new DriveTrain();
         intake = new Intake();
 
-        // create commands
+        // =========== create commands ===========
+        // auto command
+        configureAutoChoices();
+
         // drive command
         driveCommand = new DriveCommand(driveTrain, backwards, forwards, rotationDriveTrain);
         driveTrain.setDefaultCommand(driveCommand);
@@ -80,17 +81,25 @@ public class RobotContainer {
         intakeOut.whileTrue(intake.runCmd(1));
 
 
+        // TODO check with 0 instead?
         balance.whileTrue(new BalanceCommand(DriveTrain.gyro.getRoll(), driveTrain));
+    }
 
+
+    /**
+     * configures and displays the options for autonomous commands
+     */
+    private void configureAutoChoices() {
         // auto choices
+        // do nothing
         var nothing = Commands.none();
+        // just taxi (fwd/bkwd)
         var forward = driveTrain.driveOutput(0.5, 0).withTimeout(2);
         var backward = driveTrain.driveOutput(-0.5, 0).withTimeout(2);
         // forward then balance
         var balance = driveTrain.driveOutput(0.3, 0)
             .withTimeout(2)
             .andThen(new BalanceCommand(0, driveTrain).withTimeout(5));
-
         // forward, backward, balance
         var taxBalance = Commands.sequence(
             driveTrain.driveOutput(0.5, 0).withTimeout(2),
@@ -110,7 +119,8 @@ public class RobotContainer {
             driveTrain.driveOutput(0.3, 0).withTimeout(1),
             new BalanceCommand(0, driveTrain).withTimeout(5)
         );
-        // Commands.startEnd(() -> driveTrian, null, null));
+
+        // add choices to Smartdashboard
         autos.setDefaultOption("do nothing", nothing);
         autos.addOption("driveForward", forward);
         autos.addOption("driveBackward", backward);
@@ -118,7 +128,6 @@ public class RobotContainer {
         autos.addOption("forwar taxi balance", taxBalance);
         autos.addOption("score taxi", scoreTax);
         autos.addOption("score taxi balance", scoreTaxBal);
-
         SmartDashboard.putData("Auto commands", autos);
     }
 
@@ -128,6 +137,8 @@ public class RobotContainer {
      * and then passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        Controller.init();
+
         // drivetrain inputs
         backwards = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_LTRIGGER);
         forwards = Controller.simpleAxis(Controller.PRIMARY, Controller.AXIS_RTRIGGER);

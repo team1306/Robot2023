@@ -18,34 +18,21 @@ public class BalanceCommand extends CommandBase {
     public static double KD = 0.0005;
 
     private final double MaxOutput = 0.5;
-    // TODO remove when constants are tuned
-    // static {
-    // SmartDashboard.putNumber("Balance kP", KP);
-    // SmartDashboard.putNumber("Balance kI", KI);
-    // SmartDashboard.putNumber("Balance kD", KD);
-    // }
-
-    public static void updateConsts() {
-        // for live testing sake
-        // TODO remove below when constants are tuned
-        // KP = SmartDashboard.getNumber("Balance kP", KP);
-        // KI = SmartDashboard.getNumber("Balance kI", KI);
-        // KD = SmartDashboard.getNumber("Balance kD", KD);
-        SmartDashboard.putNumber("Balance kP", KP);
-        SmartDashboard.putNumber("Balance kI", KI);
-        SmartDashboard.putNumber("Balance kD", KD);
-    }
-
 
     private DriveTrain driveTrain;
     // maybe use a profiled pid controller for better control?
     private PIDController pid;
 
+    /**
+     * creates a command using a PID controller to balance the robot using its orientation from the ideal angle as the
+     * error
+     * 
+     * @param idealAngle target value of the roll angle
+     * @param driveTrain drivetrain to move
+     */
     public BalanceCommand(double idealAngle, DriveTrain driveTrain) {
         SmartDashboard.putNumber("ideal", idealAngle);
         this.driveTrain = driveTrain;
-        // todo remove below when tuned
-        updateConsts();
         pid = new PIDController(KP, KI, KD);
         pid.setSetpoint(idealAngle);
         addRequirements(driveTrain);
@@ -54,11 +41,7 @@ public class BalanceCommand extends CommandBase {
     @Override
     public void initialize() {
         pid.reset();
-        // todo remove below when tuned
-        updateConsts();
         pid.setPID(KP, KI, KD);
-        // System.out.println(List.of(KP, KI, KD));
-        // pid.enableContinuousInput(-1, 1);
     }
 
     @Override
